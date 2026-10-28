@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>KotOR Tools; + TGA ⇄ PNG Converter</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #090d16;
+      color: #e2e8f0;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .holo-glow {
+      box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    }
+    .cyan-glow {
+      box-shadow: 0 0 20px -5px rgba(6, 182, 212, 0.3);
+    }
+  
+
+#tool-tabs{position:sticky;top:0;z-index:40;background:#090d16;border-bottom:1px solid #1e293b;}
+#tool-tabs .tab-btn{padding:12px 16px;font-weight:600;color:#94a3b8;border-bottom:3px solid transparent;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font-size:15px;}
+#tool-tabs .tab-btn.active{color:#fbbf24;border-bottom-color:#f59e0b;}
+
+#tga-panel {
+    color-scheme: light dark;
+    --bg:#f2f3f5;
+    --panel:#ffffff;
+    --panel-2:#e9ebee;
+    --ink:#17191d;
+    --ink-2:#4b5158;
+    --ink-3:#7c838c;
+    --line:#d8dbe0;
+    --line-strong:#bcc1c9;
+    --accent:#c2410c;
+    --accent-ink:#ffffff;
+    --accent-soft:#fdeee3;
+    --ok:#157347;
+    --ok-soft:#e2f2e8;
+    --err:#b3261e;
+    --err-soft:#fbe7e5;
+    --chip:#eef0f3;
+    --checker:#d4d7dc;
+    --shadow:0 1px 2px rgba(16,20,26,.06),0 8px 24px -16px rgba(16,20,26,.25);
+  }
+@media (prefers-color-scheme: dark) {
+#tga-panel {
+      --bg:#101215;
+      --panel:#181b1f;
+      --panel-2:#21252b;
+      --ink:#eceef1;
+      --ink-2:#b7bdc6;
+      --ink-3:#878e99;
+      --line:#2c3138;
+      --line-strong:#3d434d;
+      --accent:#f97316;
+      --accent-ink:#16100a;
+      --accent-soft:#2e1e10;
+      --ok:#4cc38a;
+      --ok-soft:#12291d;
+      --err:#ff8a80;
+      --err-soft:#331714;
+      --chip:#23272e;
+      --checker:#33383f;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -16px rgba(0,0,0,.6);
+    }
+}
+#tga-panel * {box-sizing:border-box}
+#tga-panel {-webkit-text-size-adjust:100%}
+#tga-panel {
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16px;line-height:1.45;
+  }
+#tga-panel .wrap {max-width:880px;margin:0 auto;padding:28px 16px 64px}
+@media(min-width:720px) {
+#tga-panel .wrap {padding:40px 24px 80px}
+}
+#tga-panel header.top {margin-bottom:22px}
+#tga-panel h1 {font-size:30px;line-height:1.12;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+@media(min-width:720px) {
+#tga-panel h1 {font-size:38px}
+}
+#tga-panel .sub {color:var(--ink-2);margin:0;max-width:56ch;font-size:16px}
+#tga-panel .sub strong {color:var(--ink);font-weight:600}
+#tga-panel .drop {
+    border:2px dashed var(--line-strong);border-radius:10px;background:var(--panel);
+    padding:30px 18px;text-align:center;cursor:pointer;box-shadow:var(--shadow);
+    transition:border-color .15s,background .15s;
+  }
+#tga-panel .drop:hover {border-color:var(--accent)}
+#tga-panel .drop.drag {border-color:var(--accent);background:var(--accent-soft)}
+#tga-panel .drop:focus-visible {outline:3px solid var(--accent);outline-offset:2px}
+#tga-panel .drop .icon {width:44px;height:44px;margin:0 auto 10px;color:var(--accent)}
+#tga-panel .drop .big {font-size:18px;font-weight:600;margin:0 0 4px}
+#tga-panel .drop .small {color:var(--ink-2);font-size:14px;margin:0}
+#tga-panel .drop .small b {color:var(--ink);font-weight:600}
+#tga-panel .drop input {display:none}
+#tga-panel .settings {
+    margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px;box-shadow:var(--shadow);
+  }
+#tga-panel .settings h2 {font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin:0 0 12px;font-weight:600}
+#tga-panel .set-grid {display:grid;gap:14px}
+@media(min-width:720px) {
+#tga-panel .set-grid {grid-template-columns:1fr 1fr 1.4fr;gap:18px}
+}
+#tga-panel .field label {display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+#tga-panel .field .hint {font-size:13px;color:var(--ink-3);margin-top:5px}
+#tga-panel select, #tga-panel input[type="text"] {
+    width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);
+    border:1px solid var(--line-strong);border-radius:7px;padding:9px 10px;min-height:44px;
+  }
+#tga-panel select:focus, #tga-panel input[type="text"]:focus {outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+#tga-panel .toggle {display:flex;align-items:center;gap:10px;min-height:44px}
+#tga-panel .toggle input {appearance:none;width:48px;height:28px;border-radius:999px;background:var(--line-strong);position:relative;cursor:pointer;flex:none;margin:0;transition:background .15s}
+#tga-panel .toggle input::after {content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#tga-panel .toggle input:checked {background:var(--accent)}
+#tga-panel .toggle input:checked::after {left:23px}
+#tga-panel .toggle span {font-size:15px}
+#tga-panel .toolbar {display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px}
+#tga-panel .toolbar .spacer {flex:1}
+#tga-panel .count {font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-2)}
+#tga-panel button {
+    font:inherit;font-size:15px;font-weight:600;border-radius:8px;cursor:pointer;
+    padding:10px 16px;min-height:44px;border:1px solid transparent;
+    display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  }
+#tga-panel button svg {width:17px;height:17px;flex:none}
+#tga-panel button:disabled {opacity:.45;cursor:not-allowed}
+#tga-panel .btn-primary {background:var(--accent);color:var(--accent-ink)}
+#tga-panel .btn-primary:not(:disabled):hover {filter:brightness(1.08)}
+#tga-panel .btn-ghost {background:var(--panel);color:var(--ink);border-color:var(--line-strong)}
+#tga-panel .btn-ghost:not(:disabled):hover {border-color:var(--ink-3)}
+#tga-panel .list {margin-top:16px;display:grid;gap:10px}
+#tga-panel .empty {
+    border:1px solid var(--line);border-radius:10px;background:var(--panel);
+    padding:22px;text-align:center;color:var(--ink-3);font-size:15px;
+  }
+#tga-panel .item {
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:12px;box-shadow:var(--shadow);display:grid;gap:10px;
+  }
+#tga-panel .item-main {display:flex;gap:12px;align-items:flex-start}
+#tga-panel .thumb {
+    width:64px;height:64px;flex:none;border-radius:7px;overflow:hidden;border:1px solid var(--line);
+    background:
+      repeating-conic-gradient(var(--checker) 0% 25%, transparent 0% 50%) 0 0/16px 16px,
+      var(--panel-2);
+    display:flex;align-items:center;justify-content:center;
+  }
+#tga-panel .thumb img {max-width:100%;max-height:100%;display:block}
+#tga-panel .thumb .noimg {font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);text-transform:uppercase;padding:4px;text-align:center}
+#tga-panel .meta {min-width:0;flex:1}
+#tga-panel .fname {font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;word-break:break-all;line-height:1.35}
+#tga-panel .fsub {font-size:13px;color:var(--ink-2);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 12px}
+#tga-panel .fsub .mono {font-family:"IBM Plex Mono",monospace}
+#tga-panel .arrow {color:var(--accent);font-weight:700}
+#tga-panel .remove {
+    flex:none;width:38px;height:38px;min-height:38px;padding:0;border-radius:7px;
+    background:transparent;color:var(--ink-3);border:1px solid var(--line);
+  }
+#tga-panel .remove:hover {color:var(--err);border-color:var(--err)}
+#tga-panel .remove svg {width:16px;height:16px}
+#tga-panel .status {font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+#tga-panel .status.ok {color:var(--ok)}
+#tga-panel .status.err {color:var(--err)}
+#tga-panel .status.work {color:var(--ink-2)}
+#tga-panel .err-msg {font-size:13px;color:var(--err);background:var(--err-soft);border-radius:7px;padding:8px 10px;word-break:break-word}
+#tga-panel .outs {display:flex;flex-wrap:wrap;gap:8px}
+#tga-panel .out-chip {
+    display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+    font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;
+    background:var(--chip);color:var(--ink);border:1px solid var(--line);
+    border-radius:7px;padding:8px 11px;min-height:40px;max-width:100%;
+  }
+#tga-panel .out-chip span {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tga-panel .out-chip svg {width:15px;height:15px;flex:none;color:var(--accent)}
+#tga-panel .out-chip:hover {border-color:var(--accent)}
+#tga-panel .out-chip .sz {color:var(--ink-3);font-size:12px}
+#tga-panel footer {margin-top:30px;color:var(--ink-3);font-size:13.5px;line-height:1.6}
+#tga-panel footer p {margin:0 0 6px}
+#tga-panel footer .mono {font-family:"IBM Plex Mono",monospace}
+#tga-panel{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;}
+
+</style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
+<nav id="tool-tabs">
+  <div class="max-w-6xl mx-auto px-4 flex gap-2">
+    <button type="button" class="tab-btn active" data-tab="bzf-panel">Extractor</button>
+    <button type="button" class="tab-btn" data-tab="tga-panel">TGA ⇄ PNG Converter</button>
+  </div>
+</nav>
+<section id="bzf-panel">
+<!-- Top Header -->
+  <header class="sticky top-[61px] z-30 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold mono text-sm shadow-inner">
+          BZF
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">KotOR Extractor</h1>
+            <span class="px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">100% Offline Engine</span>
+          </div>
+          <p class="text-xs text-slate-400">Unpack <span class="mono text-slate-300">.bzf</span>, <span class="mono text-slate-300">.erf</span>, <span class="mono text-slate-300">.mod</span>, <span class="mono text-slate-300">.sav</span>, <span class="mono text-slate-300">.rim</span> &amp; <span class="mono text-slate-300">.bif</span> archives directly on your phone (plus <span class="mono text-slate-300">.tpc</span> &rarr; <span class="mono text-slate-300">.tga</span> conversion)</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnLoadDemo" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Load Sample BZF</span>
+        </button>
+        <button id="btnOpenGuide" type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span>Phone / App Guide</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-5 space-y-5">
+
+    <!-- Upload Cards Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Step 1: chitin.key -->
+      <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden">
+        <div class="flex items-start justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 mono">STEP 1 (OPTIONAL)</span>
+              <span id="keyStatusBadge" class="text-xs text-slate-400">Not loaded</span>
+            </div>
+            <h2 class="text-sm font-semibold text-white">Load <span class="mono text-cyan-300">chitin.key</span> Index</h2>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Maps internal BZF Resource IDs (like <span class="mono text-slate-300">0x01900004</span>) to exact original filenames (like <span class="mono text-slate-300">lda_water01b.tga</span>). Even without it, <span class="mono text-slate-300">.mdl/.mdx</span> names are auto-detected!
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2.5">
+          <label for="inputKeyFile" class="cursor-pointer px-3.5 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 border border-cyan-500/40 text-xs font-semibold transition inline-flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            <span>Select chitin.key</span>
+          </label>
+          <input id="inputKeyFile" type="file" accept=".key,application/octet-stream,*/*" class="hidden" />
+          <button id="btnClearKey" type="button" class="hidden px-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition">
+            Clear KEY
+          </button>
+          <span id="keySummaryText" class="text-xs mono text-slate-400 truncate"></span>
+        </div>
+      </div>
+
+      <!-- Step 2: .bzf / .bif files -->
+      <div class="rounded-2xl bg-slate-900/90 border border-amber-500/30 holo-glow p-4 flex flex-col justify-between relative overflow-hidden">
+        <div class="space-y-1">
+          <div class="flex items-center justify-between gap-2">
+            <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 mono">STEP 2 • ADD ARCHIVES</span>
+            <span id="bzfCountBadge" class="text-xs mono text-amber-300 font-medium">0 archives loaded</span>
+          </div>
+          <h2 class="text-sm font-semibold text-white">Select <span class="mono text-amber-300">.bzf</span>, <span class="mono text-amber-300">.erf</span>, <span class="mono text-amber-300">.mod</span>, <span class="mono text-amber-300">.sav</span>, <span class="mono text-amber-300">.rim</span> or <span class="mono text-amber-300">.bif</span> Files</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Pick <span class="mono text-slate-300">swpc_tex_tpa.erf</span>, <span class="mono text-slate-300">player.bzf</span>, <span class="mono text-slate-300">textures.bzf</span>, module <span class="mono text-slate-300">.erf/.mod/.rim</span>, or savegame <span class="mono text-slate-300">.sav</span> files. <span class="mono text-emerald-300">.erf/.mod/.rim</span> already store filenames inside!
+          </p>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2.5">
+          <label for="inputBzfFiles" class="cursor-pointer px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition inline-flex items-center gap-2 shadow-lg shadow-amber-500/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <span>Add .BZF / .ERF / .MOD / .RIM Files</span>
+          </label>
+          <input id="inputBzfFiles" type="file" multiple accept=".bzf,.bif,.erf,.mod,.sav,.hak,.rim,application/octet-stream,*/*" class="hidden" />
+          <button id="btnClearAll" type="button" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/60 hover:text-rose-300 hover:border-rose-500/40 border border-slate-700 text-slate-300 text-xs font-medium transition">
+            Reset All
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress & Action Bar -->
+    <section id="actionPanel" class="rounded-2xl bg-slate-900/95 border border-slate-800 p-4 space-y-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400" id="statusDot"></span>
+            <span id="statusText" class="text-xs sm:text-sm font-medium text-slate-200">Ready — select your BZF files above or load the sample archive.</span>
+          </div>
+          <span id="statsPill" class="px-2.5 py-0.5 rounded-full text-xs mono bg-slate-800 text-slate-300 border border-slate-700">0 files • 0 KB</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700 cursor-pointer select-none">
+            <input id="chkSubfolders" type="checkbox" checked class="rounded border-slate-600 text-amber-500 focus:ring-amber-500 bg-slate-900" />
+            <span>Separate folder per Archive</span>
+          </label>
+          <label class="inline-flex items-center gap-1.5 text-xs text-cyan-200 bg-cyan-950/50 px-2.5 py-1.5 rounded-lg border border-cyan-500/30 cursor-pointer select-none" title="Automatically convert KotOR .TPC textures into standard .TGA image files + .TXI info files when extracting">
+            <input id="chkConvertTpc" type="checkbox" class="rounded border-slate-600 text-cyan-500 focus:ring-cyan-500 bg-slate-900" />
+            <span>Convert .TPC &rarr; .TGA</span>
+          </label>
+          <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700 cursor-pointer select-none">
+            <input id="chkIncludeManifest" type="checkbox" checked class="rounded border-slate-600 text-amber-500 focus:ring-amber-500 bg-slate-900" />
+            <span>Include README_MANIFEST.txt</span>
+          </label>
+          <button id="btnDownloadZip" type="button" disabled class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span id="btnDownloadZipLabel">Extract &amp; Download All (.ZIP)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div id="progressContainer" class="hidden space-y-1">
+        <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-amber-500 to-cyan-400 transition-all duration-150" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[11px] mono text-slate-400">
+          <span id="progressDetail">Decompressing LZMA streams...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Resource Explorer + Inspector Split View -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Left 2 cols: Resource Table -->
+      <div class="lg:col-span-2 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col overflow-hidden">
+        <!-- Toolbar -->
+        <div class="p-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 bg-slate-950/40">
+          <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+            <div class="relative flex-1">
+              <svg class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input id="searchInput" type="text" placeholder="Filter by filename, extension (.mdl, .tga, .txi), or hex ID..." class="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500" />
+            </div>
+            <select id="filterArchive" class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+              <option value="ALL">All Archives</option>
+            </select>
+            <select id="filterType" class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+              <option value="ALL">All Types</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnSelectAll" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300 border border-slate-700 transition">
+              Toggle Select Filtered
+            </button>
+          </div>
+        </div>
+
+        <!-- Table list -->
+        <div class="overflow-x-auto max-h-[460px] overflow-y-auto flex-1">
+          <table class="w-full text-left border-collapse">
+            <thead class="sticky top-0 bg-slate-950/95 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 z-10">
+              <tr>
+                <th class="py-2.5 px-3 w-8">
+                  <input id="chkMaster" type="checkbox" checked class="rounded border-slate-600 text-amber-500 focus:ring-amber-500 bg-slate-900" />
+                </th>
+                <th class="py-2.5 px-2">Archive / Folder</th>
+                <th class="py-2.5 px-2">Filename</th>
+                <th class="py-2.5 px-2">Type</th>
+                <th class="py-2.5 px-2 text-right">Compressed</th>
+                <th class="py-2.5 px-2 text-right">Uncompressed</th>
+                <th class="py-2.5 px-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="resourceTableBody" class="divide-y divide-slate-800/60 text-xs">
+              <tr>
+                <td colspan="7" class="py-12 text-center text-slate-500">
+                  No BZF archives loaded yet. Tap <strong class="text-amber-400">Add .BZF / .BIF Files</strong> above or tap <strong class="text-cyan-400">Load Sample BZF</strong> to test!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right 1 col: Live Resource Inspector & Preview -->
+      <div class="rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col overflow-hidden">
+        <div class="p-3 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>Resource Inspector</span>
+          </h3>
+          <button id="btnDownloadSingle" type="button" disabled class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 disabled:opacity-40 text-cyan-300 border border-cyan-500/30 text-[11px] font-medium transition">
+            Download File
+          </button>
+        </div>
+
+        <div id="inspectorBody" class="p-4 flex-1 flex flex-col justify-between space-y-4 overflow-y-auto max-h-[460px]">
+          <div class="space-y-3">
+            <div id="inspectorMeta" class="text-xs text-slate-400 space-y-1">
+              <p class="text-slate-500 italic">Tap any file in the table to decompress and preview its contents (TGA texture render, TXI shader properties, MDL model header, or hex dump).</p>
+            </div>
+
+            <!-- Canvas preview for TGA -->
+            <div id="tgaPreviewWrap" class="hidden rounded-xl bg-slate-950 border border-slate-800 p-3 flex flex-col items-center space-y-2">
+              <span class="text-[11px] mono text-cyan-300" id="tgaDimensionsLabel">TGA Preview</span>
+              <canvas id="tgaCanvas" class="max-w-full h-auto rounded border border-slate-800 bg-[repeating-conic-gradient(#1e293b_0%_25%,#0f172a_0%_50%)] bg-[length:16px_16px]"></canvas>
+            </div>
+
+            <!-- Text / Hex preview -->
+            <pre id="inspectorCode" class="hidden p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] mono text-emerald-300 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-64"></pre>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800/80 text-[11px] text-slate-400 space-y-1">
+            <div class="font-semibold text-slate-300">Supported KotOR Formats:</div>
+            <p class="leading-relaxed">
+              Automatically maps <span class="mono text-slate-300">.mdl, .mdx, .tga, .txi, .tpc, .2da, .gff, .uti, .utc, .utp, .dlg, .ncs, .nss, .wav</span> and auto-reads internal Aurora MDL names even without <span class="mono text-slate-300">chitin.key</span>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Phone & APK Guide Modal -->
+  <div id="guideModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span>How to Use on Android (Offline App Mode)</span>
+        </h3>
+        <button id="btnCloseGuide" type="button" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200">
+          <strong>100% Standalone Single-File Tool:</strong> This entire extractor (including the LZMA1 decoder and ZIP builder) is packed inside a single HTML file with zero external dependencies!
+        </div>
+        <ol class="list-decimal list-inside space-y-2">
+          <li>
+            <strong>Use right here or download the HTML file:</strong> You can use this tool directly in your browser right now, or save <span class="mono text-cyan-300">kotor_bzf_extractor.html</span> to your phone's <span class="mono">Downloads</span> folder and open it anytime in Chrome, Firefox, or Brave — even with <strong>Airplane Mode on</strong>.
+          </li>
+          <li>
+            <strong>Install to Android Home Screen (Like an APK):</strong> When opening the downloaded <span class="mono">.html</span> file in Chrome on Android, tap the <strong>3-dot menu ⋮ → Add to Home screen</strong>. It launches full-screen like a native app without needing unknown-source APK permissions.
+          </li>
+          <li>
+            <strong>Where to find KotOR files on Android:</strong> Using an Android file manager (like ZArchiver or MiXplorer), look inside <span class="mono text-slate-200">Android/data/com.aspyr.swkotor/files/</span> (or inside the OBB archive <span class="mono text-slate-200">main.*.com.aspyr.swkotor.obb</span>, which is just a renameable <span class="mono">.zip</span> file!).
+          </li>
+        </ol>
+      </div>
+      <div class="pt-2 flex justify-end">
+        <button id="btnCloseGuideBottom" type="button" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
+          Got It
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="tga-panel" hidden>
+<div class="wrap">
+
+  <header class="top">
+    <h1>TGA ⇄ PNG Converter</h1>
+    <p class="sub">Drop in <strong>.tga</strong> files to get PNGs, or <strong>.png</strong> files to get TGAs. Batch is built in — add as many as you like, convert them all at once, and download everything as one ZIP. Files are converted in your browser; nothing is uploaded anywhere.</p>
+  </header>
+
+  <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add files to convert">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="m6 10 6-6 6 6"/><path d="M4 20h16"/></svg>
+    <p class="big">Drop files here, or tap to browse</p>
+    <p class="small">Accepts <b>.tga</b>, <b>.png</b> (also .jpg / .webp → TGA). Direction is automatic from the file type.</p>
+    <input type="file" id="picker" multiple accept=".tga,.png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" />
+  </div>
+
+  <section class="settings" aria-label="TGA output settings">
+    <h2>PNG → TGA output</h2>
+    <div class="set-grid">
+      <div class="field">
+        <label for="depth">Bit depth</label>
+        <select id="depth">
+          <option value="auto" selected>Auto — 32-bit if the PNG has transparency, else 24-bit</option>
+          <option value="32">32-bit — always keep alpha</option>
+          <option value="24">24-bit — no alpha channel</option>
+        </select>
+        <p class="hint">KOTOR textures are usually 32-bit or 24-bit; Auto matches the source.</p>
+      </div>
+      <div class="field">
+        <label>Compression</label>
+        <div class="toggle">
+          <input type="checkbox" id="rle" checked />
+          <span>RLE compress the TGA</span>
+        </div>
+        <p class="hint">Same RLE format (type 10) the game files use. Turn off for uncompressed type 2.</p>
+      </div>
+      <div class="field">
+        <label for="suffixes">Variant copies <span style="color:var(--ink-3);font-weight:400">(optional)</span></label>
+        <input type="text" id="suffixes" placeholder="e.g. d, d1, d2, d3" autocomplete="off" spellcheck="false" />
+        <p class="hint">For each PNG→TGA file, also make copies with these suffixes — e.g. <span style="font-family:var(--mono,monospace)">PMHA04.tga</span> plus PMHA04d, d1, d2, d3 in one go.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <button class="btn-primary" id="downloadAll" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="m6 10 6 6 6-6"/><path d="M4 20h16"/></svg>
+      Download all
+    </button>
+    <button class="btn-ghost" id="clearAll" disabled>Clear list</button>
+    <span class="spacer"></span>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="list" id="list">
+    <div class="empty" id="empty">No files yet. Add .tga or .png files above — each one converts as soon as it lands.</div>
+  </div>
+
+  <footer>
+    <p><span class="mono">TGA in:</span> uncompressed and RLE types 1, 2, 3, 9, 10, 11 — truecolor 16 / 24 / 32-bit, greyscale 8 / 16-bit, and colour-mapped files with a palette. Orientation flags in the header are honoured, so images come out the right way up.</p>
+    <p><span class="mono">TGA out:</span> written bottom-up (the classic origin games expect), RLE type 10 or uncompressed type 2, 24- or 32-bit.</p>
+  </footer>
+
+</div>
+</section>
+<script>
+(function(){
+  var btns = document.querySelectorAll('#tool-tabs .tab-btn');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      btns.forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      document.getElementById('bzf-panel').hidden = (b.dataset.tab !== 'bzf-panel');
+      document.getElementById('tga-panel').hidden = (b.dataset.tab !== 'tga-panel');
+      window.scrollTo(0,0);
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+    // =========================================================================
+    // 1. KotOR Resource Type Table
+    // =========================================================================
+    const KOTOR_RES_TYPES = {
+      0: 'res', 1: 'bmp', 2: 'mve', 3: 'tga', 4: 'wav', 6: 'plt', 7: 'ini',
+      10: 'txt', 2000: 'plh', 2001: 'tex', 2002: 'mdl', 2003: 'thg',
+      2005: 'fnt', 2007: 'lua', 2008: 'slt', 2009: 'nss', 2010: 'ncs',
+      2011: 'mod', 2012: 'are', 2013: 'set', 2014: 'ifo', 2015: 'bic',
+      2016: 'wok', 2017: '2da', 2018: 'tlk', 2022: 'txi', 2023: 'git',
+      2024: 'bti', 2025: 'uti', 2026: 'btc', 2027: 'utc', 2029: 'dlg',
+      2030: 'itp', 2031: 'btt', 2032: 'utt', 2033: 'dds', 2034: 'bts',
+      2035: 'uts', 2036: 'ltr', 2037: 'gff', 2038: 'fac', 2039: 'bte',
+      2040: 'ute', 2041: 'btd', 2042: 'utd', 2043: 'btp', 2044: 'utp',
+      2045: 'dft', 2046: 'gic', 2047: 'gui', 2048: 'css', 2049: 'ccs',
+      2050: 'btm', 2051: 'utm', 2052: 'dwk', 2053: 'pwk', 2054: 'btg',
+      2055: 'utg', 2056: 'jrl', 2057: 'sav', 2058: 'utw', 2059: '4pc',
+      2060: 'ssf', 2061: 'hak', 2062: 'nwm', 2063: 'bik', 2064: 'ndb',
+      2065: 'ptm', 2066: 'ptt', 3000: 'lyt', 3001: 'vis', 3002: 'rim',
+      3003: 'pth', 3004: 'lip', 3005: 'bwm', 3006: 'txb', 3007: 'tpc',
+      3008: 'mdx', 3009: 'rsv', 3010: 'sig', 3011: 'xbx'
+    };
+
+    function getExtForType(resType) {
+      return KOTOR_RES_TYPES[resType] || ('type' + resType);
+    }
+
+    // =========================================================================
+    // 2. Pure-JS LZMA1 Decoder for KotOR BZF Streams
+    // =========================================================================
+    function decompressLZMA1(input, outSize) {
+      if (outSize === 0) return new Uint8Array(0);
+      // If uncompressed BIF or raw entry where size matches exactly and header is not LZMA
+      if (input.length === outSize && input[0] !== 0x5d) {
+        return new Uint8Array(input);
+      }
+      const props = input[0];
+      if (props >= 225) {
+        throw new Error('Unsupported LZMA properties byte: 0x' + props.toString(16));
+      }
+      const lc = props % 9;
+      const rem = (props / 9) | 0;
+      const lp = rem % 5;
+      const pb = (rem / 5) | 0;
+
+      const outBuf = new Uint8Array(outSize);
+      let outPos = 0;
+
+      // KotOR BZF stores 5-byte LZMA properties (1 byte props + 4 byte dictSize)
+      // followed immediately by the range coder init byte (0x00) and 4 big-endian code bytes.
+      // (Standard .lzma files have an 8-byte uncompressed size at offset 5..13; handle both!)
+      let inPos = 5;
+      // Check if this is standard 13-byte header vs 5-byte KotOR BZF header:
+      // In KotOR BZF, byte 5 is always 0x00 (range coder first byte) and byte 6 is non-zero high byte of code.
+      if (input.length > 13 && input[5] === (outSize & 0xFF) && input[6] === ((outSize >>> 8) & 0xFF) && input[7] === ((outSize >>> 16) & 0xFF) && input[9] === 0 && input[10] === 0 && input[13] === 0) {
+        inPos = 13;
+      }
+
+      inPos++; // skip leading 0x00 byte of range coder
+      let code = 0;
+      for (let i = 0; i < 4; i++) {
+        code = ((code << 8) | (input[inPos++] || 0)) >>> 0;
+      }
+      let range = 0xFFFFFFFF;
+
+      function decodeBit(probs, index) {
+        const prob = probs[index];
+        const bound = ((range >>> 11) * prob) >>> 0;
+        if (code < bound) {
+          range = bound;
+          probs[index] = (prob + ((2048 - prob) >>> 5)) & 0xFFFF;
+          if ((range & 0xFF000000) === 0) {
+            code = ((code << 8) | (input[inPos++] || 0)) >>> 0;
+            range = (range << 8) >>> 0;
+          }
+          return 0;
+        } else {
+          range = (range - bound) >>> 0;
+          code = (code - bound) >>> 0;
+          probs[index] = (prob - (prob >>> 5)) & 0xFFFF;
+          if ((range & 0xFF000000) === 0) {
+            code = ((code << 8) | (input[inPos++] || 0)) >>> 0;
+            range = (range << 8) >>> 0;
+          }
+          return 1;
+        }
+      }
+
+      function decodeDirectBits(numBits) {
+        let res = 0;
+        for (let i = numBits; i > 0; i--) {
+          range = range >>> 1;
+          const t = ((code - range) >>> 31);
+          code = (code - (range & (t - 1))) >>> 0;
+          res = (res << 1) | (1 - t);
+          if ((range & 0xFF000000) === 0) {
+            code = ((code << 8) | (input[inPos++] || 0)) >>> 0;
+            range = (range << 8) >>> 0;
+          }
+        }
+        return res;
+      }
+
+      function bitTreeDecode(probs, offset, numBits) {
+        let m = 1;
+        for (let i = 0; i < numBits; i++) {
+          m = (m << 1) | decodeBit(probs, offset + m);
+        }
+        return m - (1 << numBits);
+      }
+
+      function reverseBitTreeDecode(probs, offset, numBits) {
+        let m = 1;
+        let symbol = 0;
+        for (let i = 0; i < numBits; i++) {
+          const bit = decodeBit(probs, offset + m);
+          m = (m << 1) | bit;
+          symbol |= (bit << i);
+        }
+        return symbol;
+      }
+
+      function createProbs(size) {
+        const p = new Uint16Array(size);
+        p.fill(1024);
+        return p;
+      }
+
+      const numPosStates = 1 << pb;
+      const posStateMask = numPosStates - 1;
+      const litPosMask = (1 << lp) - 1;
+      const numLitTables = 1 << (lc + lp);
+
+      const isMatch = createProbs(12 << pb);
+      const isRep = createProbs(12);
+      const isRepG0 = createProbs(12);
+      const isRepG1 = createProbs(12);
+      const isRepG2 = createProbs(12);
+      const isRep0Long = createProbs(12 << pb);
+      const posSlotDecoder = createProbs(4 * 64);
+      const posDecoders = createProbs(115);
+      const posAlignDecoder = createProbs(16);
+      const litProbs = createProbs(numLitTables * 0x300);
+
+      function createLenDecoder() {
+        const choice = createProbs(2);
+        const low = createProbs(16 << 3);
+        const mid = createProbs(16 << 3);
+        const high = createProbs(256);
+        return {
+          decode(posState) {
+            if (decodeBit(choice, 0) === 0) {
+              return bitTreeDecode(low, posState << 3, 3);
+            }
+            if (decodeBit(choice, 1) === 0) {
+              return 8 + bitTreeDecode(mid, posState << 3, 3);
+            }
+            return 16 + bitTreeDecode(high, 0, 8);
+          }
+        };
+      }
+
+      const lenDecoder = createLenDecoder();
+      const repLenDecoder = createLenDecoder();
+
+      let state = 0;
+      let rep0 = 0, rep1 = 0, rep2 = 0, rep3 = 0;
+      let prevByte = 0;
+
+      while (outPos < outSize) {
+        const posState = outPos & posStateMask;
+        if (decodeBit(isMatch, (state << pb) + posState) === 0) {
+          const litState = ((outPos & litPosMask) << lc) + (prevByte >>> (8 - lc));
+          const litBase = litState * 0x300;
+          let symbol = 1;
+          if (state >= 7) {
+            let matchByte = outBuf[outPos - rep0 - 1];
+            do {
+              const matchBit = (matchByte >>> 7) & 1;
+              matchByte = (matchByte << 1) & 0xFF;
+              const bit = decodeBit(litProbs, litBase + ((1 + matchBit) << 8) + symbol);
+              symbol = (symbol << 1) | bit;
+              if (matchBit !== bit) {
+                while (symbol < 0x100) {
+                  symbol = (symbol << 1) | decodeBit(litProbs, litBase + symbol);
+                }
+                break;
+              }
+            } while (symbol < 0x100);
+          } else {
+            while (symbol < 0x100) {
+              symbol = (symbol << 1) | decodeBit(litProbs, litBase + symbol);
+            }
+          }
+          prevByte = symbol & 0xFF;
+          outBuf[outPos++] = prevByte;
+          state = state < 4 ? 0 : (state < 10 ? state - 3 : state - 6);
+        } else {
+          let len = 0;
+          if (decodeBit(isRep, state) === 1) {
+            if (decodeBit(isRepG0, state) === 0) {
+              if (decodeBit(isRep0Long, (state << pb) + posState) === 0) {
+                state = state < 7 ? 9 : 11;
+                prevByte = outBuf[outPos - rep0 - 1];
+                outBuf[outPos++] = prevByte;
+                continue;
+              }
+            } else {
+              let dist;
+              if (decodeBit(isRepG1, state) === 0) {
+                dist = rep1;
+              } else {
+                if (decodeBit(isRepG2, state) === 0) {
+                  dist = rep2;
+                } else {
+                  dist = rep3;
+                  rep3 = rep2;
+                }
+                rep2 = rep1;
+              }
+              rep1 = rep0;
+              rep0 = dist;
+            }
+            len = repLenDecoder.decode(posState) + 2;
+            state = state < 7 ? 8 : 11;
+          } else {
+            rep3 = rep2;
+            rep2 = rep1;
+            rep1 = rep0;
+            len = lenDecoder.decode(posState) + 2;
+            state = state < 7 ? 7 : 10;
+            const lenToPosState = len - 2 < 4 ? len - 2 : 3;
+            const posSlot = bitTreeDecode(posSlotDecoder, lenToPosState << 6, 6);
+            if (posSlot >= 4) {
+              const numDirectBits = (posSlot >>> 1) - 1;
+              rep0 = (2 | (posSlot & 1)) << numDirectBits;
+              if (posSlot < 14) {
+                rep0 += reverseBitTreeDecode(posDecoders, rep0 - posSlot, numDirectBits);
+              } else {
+                rep0 += decodeDirectBits(numDirectBits - 4) << 4;
+                rep0 += reverseBitTreeDecode(posAlignDecoder, 0, 4);
+              }
+            } else {
+              rep0 = posSlot;
+            }
+          }
+          for (let i = 0; i < len && outPos < outSize; i++) {
+            prevByte = outBuf[outPos - rep0 - 1];
+            outBuf[outPos++] = prevByte;
+          }
+        }
+      }
+      return outBuf;
+    }
+
+    // =========================================================================
+    // 3. Pure-JS ZIP Archive Builder (STORE mode, instant & zero dependencies)
+    // =========================================================================
+    const CRC32_TABLE = (() => {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        table[i] = c >>> 0;
+      }
+      return table;
+    })();
+
+    function crc32(bytes) {
+      let crc = 0xFFFFFFFF;
+      for (let i = 0; i < bytes.length; i++) {
+        crc = (crc >>> 8) ^ CRC32_TABLE[(crc ^ bytes[i]) & 0xFF];
+      }
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function buildZipArchive(files) {
+      // files: Array of { path: string, data: Uint8Array }
+      const encoder = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+
+      for (const file of files) {
+        const nameBytes = encoder.encode(file.path);
+        const data = file.data;
+        const crc = crc32(data);
+        const size = data.length;
+
+        // Local file header (30 bytes + name)
+        const lfh = new Uint8Array(30 + nameBytes.length);
+        const ldv = new DataView(lfh.buffer);
+        ldv.setUint32(0, 0x04034b50, true); // signature
+        ldv.setUint16(4, 20, true);         // version needed
+        ldv.setUint16(6, 0x0800, true);     // UTF-8 flag
+        ldv.setUint16(8, 0, true);          // method 0 (STORE)
+        ldv.setUint16(10, 0x4800, true);    // mod time
+        ldv.setUint16(12, 0x555b, true);    // mod date
+        ldv.setUint32(14, crc, true);
+        ldv.setUint32(18, size, true);
+        ldv.setUint32(22, size, true);
+        ldv.setUint16(26, nameBytes.length, true);
+        ldv.setUint16(28, 0, true);
+        lfh.set(nameBytes, 30);
+
+        localParts.push(lfh, data);
+
+        // Central directory header (46 bytes + name)
+        const cdh = new Uint8Array(46 + nameBytes.length);
+        const cdv = new DataView(cdh.buffer);
+        cdv.setUint32(0, 0x02014b50, true);
+        cdv.setUint16(4, 20, true);
+        cdv.setUint16(6, 20, true);
+        cdv.setUint16(8, 0x0800, true);
+        cdv.setUint16(10, 0, true);
+        cdv.setUint16(12, 0x4800, true);
+        cdv.setUint16(14, 0x555b, true);
+        cdv.setUint32(16, crc, true);
+        cdv.setUint32(20, size, true);
+        cdv.setUint32(24, size, true);
+        cdv.setUint16(28, nameBytes.length, true);
+        cdv.setUint16(30, 0, true);
+        cdv.setUint16(32, 0, true);
+        cdv.setUint16(34, 0, true);
+        cdv.setUint16(36, 0, true);
+        cdv.setUint32(38, 0, true);
+        cdv.setUint32(42, offset, true);
+        cdh.set(nameBytes, 46);
+
+        centralParts.push(cdh);
+        offset += lfh.length + size;
+      }
+
+      let cdSize = 0;
+      for (const c of centralParts) cdSize += c.length;
+
+      const eocd = new Uint8Array(22);
+      const edv = new DataView(eocd.buffer);
+      edv.setUint32(0, 0x06054b50, true);
+      edv.setUint16(4, 0, true);
+      edv.setUint16(6, 0, true);
+      edv.setUint16(8, files.length, true);
+      edv.setUint16(10, files.length, true);
+      edv.setUint32(12, cdSize, true);
+      edv.setUint32(16, offset, true);
+      edv.setUint16(20, 0, true);
+
+      return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' });
+    }
+
+    // =========================================================================
+    // 4. Application State & Parsers
+    // =========================================================================
+    const state = {
+      keyMap: new Map(),      // key: `${resId}:${resType}` -> resref string
+      keyIndexMap: new Map(), // fallback key: `${resId & 0xFFFFF}:${resType}` -> array of {bifIdx, resref}
+      keyBifNames: [],
+      keyFileName: null,
+      archives: [],           // Array of { name, folder, buffer, entries }
+      allEntries: [],         // Flattened entries across all loaded archives
+      selectedEntry: null
+    };
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function readAscii(uint8, start, maxLen) {
+      let s = '';
+      const end = Math.min(uint8.length, start + maxLen);
+      for (let i = start; i < end; i++) {
+        if (uint8[i] === 0) break;
+        if (uint8[i] >= 32 && uint8[i] < 127) {
+          s += String.fromCharCode(uint8[i]);
+        }
+      }
+      return s.trim();
+    }
+
+    function parseChitinKey(arrayBuffer, fileName) {
+      const bytes = new Uint8Array(arrayBuffer);
+      const dv = new DataView(arrayBuffer);
+      const magic = readAscii(bytes, 0, 8);
+      if (!magic.startsWith('KEY V1')) {
+        throw new Error('Not a valid chitin.key file (expected KEY V1 header, got "' + magic + '")');
+      }
+      const bifCount = dv.getUint32(8, true);
+      const keyCount = dv.getUint32(12, true);
+      const fileTableOff = dv.getUint32(16, true);
+      const keyTableOff = dv.getUint32(20, true);
+
+      const newKeyMap = new Map();
+      const newBifNames = [];
+
+      for (let i = 0; i < bifCount; i++) {
+        const off = fileTableOff + i * 12;
+        const fnameOff = dv.getUint32(off + 4, true);
+        const fnameLen = dv.getUint16(off + 8, true);
+        const fn = readAscii(bytes, fnameOff, fnameLen);
+        newBifNames.push(fn);
+      }
+
+      for (let i = 0; i < keyCount; i++) {
+        const off = keyTableOff + i * 22;
+        const resref = readAscii(bytes, off, 16);
+        const resType = dv.getUint16(off + 16, true);
+        const resId = dv.getUint32(off + 18, true);
+        newKeyMap.set(`${resId}:${resType}`, resref);
+      }
+
+      state.keyMap = newKeyMap;
+      state.keyBifNames = newBifNames;
+      state.keyFileName = fileName;
+
+      // Re-resolve filenames for any already-loaded BZF archives
+      for (const arch of state.archives) {
+        resolveNamesForArchive(arch);
+      }
+      updateUI();
+    }
+
+    function parseArchive(arrayBuffer, fileName) {
+      const bytes = new Uint8Array(arrayBuffer);
+      if (bytes.length < 20) {
+        throw new Error(`"${fileName}" is too small (${bytes.length} bytes).`);
+      }
+      const dv = new DataView(arrayBuffer);
+      const magic = readAscii(bytes, 0, 8);
+      const magic4 = magic.slice(0, 4).toUpperCase();
+      const ver4 = magic.slice(4, 8).toUpperCase();
+      const folder = fileName.replace(/\.(bzf|bif|erf|mod|sav|hak|rim)$/i, '');
+
+      // Case 1: ERF / MOD / SAV / HAK (Encapsulated Resource File V1.0)
+      if (['ERF ', 'MOD ', 'SAV ', 'HAK '].includes(magic4) && ver4.startsWith('V1')) {
+        const entryCount = dv.getUint32(16, true);
+        const offKeyList = dv.getUint32(24, true);
+        const offResList = dv.getUint32(28, true);
+        const entries = [];
+
+        for (let i = 0; i < entryCount; i++) {
+          const kOff = offKeyList + i * 24;
+          const rOff = offResList + i * 8;
+          if (kOff + 24 > bytes.length || rOff + 8 > bytes.length) break;
+
+          const resref = readAscii(bytes, kOff, 16).toLowerCase() || `erf_res_${i}`;
+          const resId = dv.getUint32(kOff + 16, true);
+          const resType = dv.getUint16(kOff + 20, true);
+          const offset = dv.getUint32(rOff, true);
+          const size = dv.getUint32(rOff + 4, true);
+
+          // Check if an Android ERF has LZMA-compressed streams or standard raw streams
+          // In standard ERF, size is the exact byte length of the resource at offset.
+          const safeOffset = Math.min(offset, bytes.length);
+          const safeSize = Math.max(0, Math.min(size, bytes.length - safeOffset));
+          const ext = getExtForType(resType);
+
+          entries.push({
+            uid: `${folder}_erf_${i}_${resId}`,
+            archiveName: fileName,
+            archiveFormat: magic4.trim(),
+            folder: folder,
+            index: i,
+            resId: resId,
+            resIdHex: '0x' + resId.toString(16).padStart(8, '0'),
+            offset: safeOffset,
+            compSize: safeSize,
+            uncompSize: safeSize,
+            resType: resType,
+            ext: ext,
+            embeddedResRef: resref,
+            fileName: `${resref}.${ext}`,
+            nameSource: `${magic4.trim()} Header`,
+            selected: true,
+            isRawErf: true,
+            cachedData: null,
+            rawSlice: new Uint8Array(arrayBuffer, safeOffset, safeSize)
+          });
+        }
+        return { name: fileName, folder, format: magic4.trim(), buffer: arrayBuffer, entries };
+      }
+
+      // Case 2: RIM V1.0 (Resource Image File, also used for modules in KotOR)
+      if (magic4 === 'RIM ' && ver4.startsWith('V1')) {
+        const entryCount = dv.getUint32(12, true);
+        const offKeyList = dv.getUint32(16, true);
+        const entries = [];
+
+        for (let i = 0; i < entryCount; i++) {
+          const eOff = offKeyList + i * 32;
+          if (eOff + 32 > bytes.length) break;
+          const resref = readAscii(bytes, eOff, 16).toLowerCase() || `rim_res_${i}`;
+          const resType = dv.getUint16(eOff + 16, true);
+          const resId = dv.getUint32(eOff + 20, true);
+          const offset = dv.getUint32(eOff + 24, true);
+          const size = dv.getUint32(eOff + 28, true);
+
+          const safeOffset = Math.min(offset, bytes.length);
+          const safeSize = Math.max(0, Math.min(size, bytes.length - safeOffset));
+          const ext = getExtForType(resType);
+
+          entries.push({
+            uid: `${folder}_rim_${i}_${resId}`,
+            archiveName: fileName,
+            archiveFormat: 'RIM',
+            folder: folder,
+            index: i,
+            resId: resId,
+            resIdHex: '0x' + resId.toString(16).padStart(8, '0'),
+            offset: safeOffset,
+            compSize: safeSize,
+            uncompSize: safeSize,
+            resType: resType,
+            ext: ext,
+            embeddedResRef: resref,
+            fileName: `${resref}.${ext}`,
+            nameSource: 'RIM Header',
+            selected: true,
+            isRawErf: true,
+            cachedData: null,
+            rawSlice: new Uint8Array(arrayBuffer, safeOffset, safeSize)
+          });
+        }
+        return { name: fileName, folder, format: 'RIM', buffer: arrayBuffer, entries };
+      }
+
+      // Case 3: BIFFV1 (.bzf LZMA compressed or .bif uncompressed)
+      if (!magic.startsWith('BIFFV1')) {
+        throw new Error(`"${fileName}" has unsupported header "${magic}" (expected BIFFV1, ERF V1.0, MOD V1.0, SAV V1.0, or RIM V1.0).`);
+      }
+
+      const varCount = dv.getUint32(8, true);
+      const varOffset = dv.getUint32(16, true);
+
+      const entries = [];
+      for (let i = 0; i < varCount; i++) {
+        const eOff = varOffset + i * 16;
+        const resId = dv.getUint32(eOff, true);
+        const offset = dv.getUint32(eOff + 4, true);
+        const uncompSize = dv.getUint32(eOff + 8, true);
+        const resType = dv.getUint32(eOff + 12, true);
+        const nextOffset = (i + 1 < varCount) ? dv.getUint32(eOff + 20, true) : bytes.length;
+        const compSize = Math.max(0, nextOffset - offset);
+
+        entries.push({
+          uid: `${folder}_${i}_${resId}`,
+          archiveName: fileName,
+          archiveFormat: 'BZF',
+          folder: folder,
+          index: i,
+          resId: resId,
+          resIdHex: '0x' + resId.toString(16).padStart(8, '0'),
+          offset: offset,
+          compSize: compSize,
+          uncompSize: uncompSize,
+          resType: resType,
+          ext: getExtForType(resType),
+          fileName: '',
+          nameSource: 'index',
+          selected: true,
+          isRawErf: false,
+          cachedData: null,
+          rawSlice: new Uint8Array(arrayBuffer, offset, compSize)
+        });
+      }
+
+      const arch = { name: fileName, folder, format: 'BZF', buffer: arrayBuffer, entries };
+      resolveNamesForArchive(arch);
+      return arch;
+    }
+
+    function decompressEntry(entry) {
+      if (entry.cachedData) return entry.cachedData;
+      if (entry.isRawErf) {
+        entry.cachedData = entry.rawSlice;
+        return entry.cachedData;
+      }
+      const out = decompressLZMA1(entry.rawSlice, entry.uncompSize);
+      entry.cachedData = out;
+      return out;
+    }
+
+    function resolveNamesForArchive(arch) {
+      if (arch.format && arch.format !== 'BZF') return; // ERF / MOD / SAV / RIM already have embedded filenames
+      let lastMdlName = null;
+      for (const entry of arch.entries) {
+        const keyHit = state.keyMap.get(`${entry.resId}:${entry.resType}`);
+        if (keyHit) {
+          entry.fileName = `${keyHit}.${entry.ext}`;
+          entry.nameSource = 'chitin.key';
+          if (entry.resType === 2002) lastMdlName = keyHit;
+          continue;
+        }
+
+        // If no chitin.key match, check if it's an MDL (2002) and read internal Aurora model name!
+        if (entry.resType === 2002) {
+          try {
+            const raw = decompressEntry(entry);
+            const mdlName = readAscii(raw, 20, 32).toLowerCase();
+            if (mdlName) {
+              lastMdlName = mdlName;
+              entry.fileName = `${mdlName}.${entry.ext}`;
+              entry.nameSource = 'MDL Header';
+              continue;
+            }
+          } catch (_) {
+            // fallback below
+          }
+        } else if (entry.resType === 3008 && lastMdlName) {
+          entry.fileName = `${lastMdlName}.${entry.ext}`;
+          entry.nameSource = 'MDL Pair';
+          continue;
+        }
+
+        entry.fileName = `${arch.folder}_${ String(entry.index).padStart(3, '0') }_${entry.resIdHex}.${entry.ext}`;
+        entry.nameSource = 'Resource ID';
+      }
+    }
+
+    function rebuildAllEntries() {
+      state.allEntries = [];
+      for (const arch of state.archives) {
+        for (const e of arch.entries) {
+          state.allEntries.push(e);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 5. UI Rendering & Filtering
+    // =========================================================================
+    const els = {
+      inputKeyFile: document.getElementById('inputKeyFile'),
+      btnClearKey: document.getElementById('btnClearKey'),
+      keyStatusBadge: document.getElementById('keyStatusBadge'),
+      keySummaryText: document.getElementById('keySummaryText'),
+      inputBzfFiles: document.getElementById('inputBzfFiles'),
+      btnClearAll: document.getElementById('btnClearAll'),
+      bzfCountBadge: document.getElementById('bzfCountBadge'),
+      statusText: document.getElementById('statusText'),
+      statsPill: document.getElementById('statsPill'),
+      chkSubfolders: document.getElementById('chkSubfolders'),
+      chkIncludeManifest: document.getElementById('chkIncludeManifest'),
+      btnDownloadZip: document.getElementById('btnDownloadZip'),
+      btnDownloadZipLabel: document.getElementById('btnDownloadZipLabel'),
+      progressContainer: document.getElementById('progressContainer'),
+      progressBar: document.getElementById('progressBar'),
+      progressDetail: document.getElementById('progressDetail'),
+      progressPercent: document.getElementById('progressPercent'),
+      searchInput: document.getElementById('searchInput'),
+      filterArchive: document.getElementById('filterArchive'),
+      filterType: document.getElementById('filterType'),
+      btnSelectAll: document.getElementById('btnSelectAll'),
+      chkMaster: document.getElementById('chkMaster'),
+      resourceTableBody: document.getElementById('resourceTableBody'),
+      inspectorMeta: document.getElementById('inspectorMeta'),
+      tgaPreviewWrap: document.getElementById('tgaPreviewWrap'),
+      tgaDimensionsLabel: document.getElementById('tgaDimensionsLabel'),
+      tgaCanvas: document.getElementById('tgaCanvas'),
+      inspectorCode: document.getElementById('inspectorCode'),
+      btnDownloadSingle: document.getElementById('btnDownloadSingle'),
+      btnLoadDemo: document.getElementById('btnLoadDemo'),
+      btnOpenGuide: document.getElementById('btnOpenGuide'),
+      guideModal: document.getElementById('guideModal'),
+      btnCloseGuide: document.getElementById('btnCloseGuide'),
+      btnCloseGuideBottom: document.getElementById('btnCloseGuideBottom')
+    };
+
+    function getFilteredEntries() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const archFilter = els.filterArchive.value;
+      const typeFilter = els.filterType.value;
+
+      return state.allEntries.filter(e => {
+        if (archFilter !== 'ALL' && e.archiveName !== archFilter) return false;
+        if (typeFilter !== 'ALL' && e.ext !== typeFilter) return false;
+        if (q) {
+          const hay = `${e.fileName} ${e.folder} ${e.resIdHex} .${e.ext}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function updateFilterDropdowns() {
+      const currentArch = els.filterArchive.value;
+      const currentType = els.filterType.value;
+
+      els.filterArchive.innerHTML = '<option value="ALL">All Archives</option>';
+      for (const arch of state.archives) {
+        const opt = document.createElement('option');
+        opt.value = arch.name;
+        opt.textContent = `${arch.name} (${arch.entries.length})`;
+        els.filterArchive.appendChild(opt);
+      }
+      if ([...els.filterArchive.options].some(o => o.value === currentArch)) {
+        els.filterArchive.value = currentArch;
+      }
+
+      const typeCounts = new Map();
+      for (const e of state.allEntries) {
+        typeCounts.set(e.ext, (typeCounts.get(e.ext) || 0) + 1);
+      }
+      els.filterType.innerHTML = '<option value="ALL">All Types</option>';
+      for (const [ext, count] of [...typeCounts.entries()].sort()) {
+        const opt = document.createElement('option');
+        opt.value = ext;
+        opt.textContent = `.${ext.toUpperCase()} (${count})`;
+        els.filterType.appendChild(opt);
+      }
+      if ([...els.filterType.options].some(o => o.value === currentType)) {
+        els.filterType.value = currentType;
+      }
+    }
+
+    function updateUI() {
+      // KEY status
+      if (state.keyMap.size > 0) {
+        els.keyStatusBadge.textContent = 'Loaded (' + state.keyMap.size.toLocaleString() + ' keys)';
+        els.keyStatusBadge.className = 'text-xs text-emerald-400 font-medium';
+        els.keySummaryText.textContent = state.keyFileName;
+        els.btnClearKey.classList.remove('hidden');
+      } else {
+        els.keyStatusBadge.textContent = 'Not loaded';
+        els.keyStatusBadge.className = 'text-xs text-slate-400';
+        els.keySummaryText.textContent = '';
+        els.btnClearKey.classList.add('hidden');
+      }
+
+      // Archive counts & totals
+      els.bzfCountBadge.textContent = `${state.archives.length} archive${state.archives.length === 1 ? '' : 's'} loaded`;
+      const selectedEntries = state.allEntries.filter(e => e.selected);
+      const totalUncomp = selectedEntries.reduce((acc, e) => acc + e.uncompSize, 0);
+      els.statsPill.textContent = `${selectedEntries.length} / ${state.allEntries.length} files selected • ${formatBytes(totalUncomp)} unpacked`;
+
+      els.btnDownloadZip.disabled = selectedEntries.length === 0;
+      els.btnDownloadZipLabel.textContent = selectedEntries.length > 0
+        ? `Extract & Download ZIP (${selectedEntries.length} files)`
+        : 'Extract & Download All (.ZIP)';
+
+      renderTable();
+    }
+
+    function renderTable() {
+      const filtered = getFilteredEntries();
+      if (filtered.length === 0) {
+        els.resourceTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-12 text-center text-slate-500">
+              ${state.allEntries.length === 0
+                ? 'No BZF archives loaded yet. Tap <strong class="text-amber-400">Add .BZF / .BIF Files</strong> above or tap <strong class="text-cyan-400">Load Sample BZF</strong> to test!'
+                : 'No resources match your current filter.'}
+            </td>
+          </tr>`;
+        return;
+      }
+
+      const rowsHtml = filtered.map(e => {
+        const isActive = state.selectedEntry && state.selectedEntry.uid === e.uid;
+        const badgeColor = e.nameSource === 'chitin.key'
+          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+          : (e.nameSource.startsWith('MDL') ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30' : 'bg-slate-800 text-slate-400 border-slate-700');
+
+        return `
+          <tr data-uid="${e.uid}" class="resource-row cursor-pointer transition ${isActive ? 'bg-amber-500/15' : 'hover:bg-slate-800/70'}">
+            <td class="py-2 px-3" onclick="event.stopPropagation()">
+              <input type="checkbox" data-check-uid="${e.uid}" ${e.selected ? 'checked' : ''} class="row-checkbox rounded border-slate-600 text-amber-500 focus:ring-amber-500 bg-slate-900" />
+            </td>
+            <td class="py-2 px-2 mono text-slate-400">${e.folder}/</td>
+            <td class="py-2 px-2">
+              <div class="flex items-center gap-2">
+                <span class="mono font-medium text-white">${e.fileName}</span>
+                <span class="px-1.5 py-0.2 text-[10px] rounded border ${badgeColor}">${e.nameSource}</span>
+              </div>
+            </td>
+            <td class="py-2 px-2">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-amber-300 mono text-[11px] uppercase border border-slate-700">.${e.ext}</span>
+            </td>
+            <td class="py-2 px-2 text-right mono text-slate-400">${formatBytes(e.compSize)}</td>
+            <td class="py-2 px-2 text-right mono text-slate-200">${formatBytes(e.uncompSize)}</td>
+            <td class="py-2 px-3 text-right" onclick="event.stopPropagation()">
+              <button type="button" data-dl-uid="${e.uid}" class="px-2 py-1 rounded bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 text-[11px] font-medium transition">
+                Save
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      els.resourceTableBody.innerHTML = rowsHtml;
+
+      // Wire row events
+      els.resourceTableBody.querySelectorAll('.resource-row').forEach(tr => {
+        tr.addEventListener('click', () => {
+          const uid = tr.getAttribute('data-uid');
+          const entry = state.allEntries.find(x => x.uid === uid);
+          if (entry) inspectResource(entry);
+        });
+      });
+
+      els.resourceTableBody.querySelectorAll('.row-checkbox').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const uid = chk.getAttribute('data-check-uid');
+          const entry = state.allEntries.find(x => x.uid === uid);
+          if (entry) {
+            entry.selected = chk.checked;
+            updateUI();
+          }
+        });
+      });
+
+      els.resourceTableBody.querySelectorAll('[data-dl-uid]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const uid = btn.getAttribute('data-dl-uid');
+          const entry = state.allEntries.find(x => x.uid === uid);
+          if (entry) downloadSingleEntry(entry);
+        });
+      });
+    }
+
+    // =========================================================================
+    // 6. Resource Inspector (TGA Renderer, TXI/2DA Text Viewer, Hex Dump)
+    // =========================================================================
+    // =========================================================================
+    // 6A. KotOR .TPC Texture Decoder & .TPC -> .TGA + .TXI Converter
+    //     (Used by swpc_tex_tpa.erf, swpc_tex_tpb.erf, swpc_tex_gui.erf)
+    // =========================================================================
+    function decodeTpcTexture(raw) {
+      if (raw.length < 128) return null;
+      const dv = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+      const dataSize = dv.getUint32(0, true);
+      const width = dv.getUint16(8, true);
+      const height = dv.getUint16(10, true);
+      const encoding = raw[12]; // 1 = Grayscale, 2 = RGB/DXT1, 4 = RGBA/DXT5
+      const mipCount = raw[13] || 1;
+      if (width <= 0 || height <= 0 || width > 4096 || height > 4096) return null;
+
+      const isCompressed = dataSize > 0;
+      const rgba = new Uint8Array(width * height * 4);
+      let dataEndOffset = 128;
+
+      if (!isCompressed) {
+        // Uncompressed TPC
+        if (encoding === 1) {
+          const bpp = 1;
+          for (let i = 0; i < width * height; i++) {
+            const v = raw[128 + i] || 0;
+            rgba[i * 4] = v;
+            rgba[i * 4 + 1] = v;
+            rgba[i * 4 + 2] = v;
+            rgba[i * 4 + 3] = 255;
+          }
+          let mipW = width, mipH = height;
+          for (let m = 0; m < mipCount; m++) {
+            dataEndOffset += Math.max(1, mipW) * Math.max(1, mipH) * bpp;
+            mipW >>= 1; mipH >>= 1;
+          }
+        } else if (encoding === 2) {
+          for (let i = 0; i < width * height; i++) {
+            const sOff = 128 + i * 3;
+            rgba[i * 4] = raw[sOff] || 0;
+            rgba[i * 4 + 1] = raw[sOff + 1] || 0;
+            rgba[i * 4 + 2] = raw[sOff + 2] || 0;
+            rgba[i * 4 + 3] = 255;
+          }
+          let mipW = width, mipH = height;
+          for (let m = 0; m < mipCount; m++) {
+            dataEndOffset += Math.max(1, mipW) * Math.max(1, mipH) * 3;
+            mipW >>= 1; mipH >>= 1;
+          }
+        } else if (encoding === 4) {
+          for (let i = 0; i < width * height; i++) {
+            const sOff = 128 + i * 4;
+            rgba[i * 4] = raw[sOff] || 0;
+            rgba[i * 4 + 1] = raw[sOff + 1] || 0;
+            rgba[i * 4 + 2] = raw[sOff + 2] || 0;
+            rgba[i * 4 + 3] = raw[sOff + 3] !== undefined ? raw[sOff + 3] : 255;
+          }
+          let mipW = width, mipH = height;
+          for (let m = 0; m < mipCount; m++) {
+            dataEndOffset += Math.max(1, mipW) * Math.max(1, mipH) * 4;
+            mipW >>= 1; mipH >>= 1;
+          }
+        } else {
+          return null;
+        }
+      } else {
+        // S3TC DXT1 (encoding === 2) or DXT5 (encoding === 4)
+        const blocksX = Math.max(1, Math.ceil(width / 4));
+        const blocksY = Math.max(1, Math.ceil(height / 4));
+        const blockBytes = (encoding === 2) ? 8 : 16;
+        let ptr = 128;
+
+        for (let by = 0; by < blocksY; by++) {
+          for (let bx = 0; bx < blocksX; bx++) {
+            if (ptr + blockBytes > raw.length) break;
+            const alphas = new Uint8Array(16);
+            let colorOff = ptr;
+
+            if (encoding === 4) {
+              // DXT5 8-byte alpha block
+              const a0 = raw[ptr];
+              const a1 = raw[ptr + 1];
+              const aLut = new Uint8Array(8);
+              aLut[0] = a0;
+              aLut[1] = a1;
+              if (a0 > a1) {
+                for (let j = 1; j <= 6; j++) aLut[j + 1] = Math.round(((7 - j) * a0 + j * a1) / 7);
+              } else {
+                for (let j = 1; j <= 4; j++) aLut[j + 1] = Math.round(((5 - j) * a0 + j * a1) / 5);
+                aLut[6] = 0;
+                aLut[7] = 255;
+              }
+              // 48-bit alpha indices (16 x 3 bits)
+              const bitsLow = raw[ptr + 2] | (raw[ptr + 3] << 8) | (raw[ptr + 4] << 16);
+              const bitsHigh = raw[ptr + 5] | (raw[ptr + 6] << 8) | (raw[ptr + 7] << 16);
+              for (let p = 0; p < 8; p++) {
+                alphas[p] = aLut[(bitsLow >>> (p * 3)) & 7];
+                alphas[p + 8] = aLut[(bitsHigh >>> (p * 3)) & 7];
+              }
+              colorOff += 8;
+            } else {
+              alphas.fill(255);
+            }
+
+            const c0 = raw[colorOff] | (raw[colorOff + 1] << 8);
+            const c1 = raw[colorOff + 2] | (raw[colorOff + 3] << 8);
+            const r0 = ((c0 >>> 11) & 31) * 255 / 31;
+            const g0 = ((c0 >>> 5) & 63) * 255 / 63;
+            const b0 = (c0 & 31) * 255 / 31;
+            const r1 = ((c1 >>> 11) & 31) * 255 / 31;
+            const g1 = ((c1 >>> 5) & 63) * 255 / 63;
+            const b1 = (c1 & 31) * 255 / 31;
+
+            const colors = [
+              [r0, g0, b0, 255],
+              [r1, g1, b1, 255],
+              [0, 0, 0, 255],
+              [0, 0, 0, 255]
+            ];
+            if (c0 > c1 || encoding === 4) {
+              colors[2] = [(2 * r0 + r1) / 3, (2 * g0 + g1) / 3, (2 * b0 + b1) / 3, 255];
+              colors[3] = [(r0 + 2 * r1) / 3, (g0 + 2 * g1) / 3, (b0 + 2 * b1) / 3, 255];
+            } else {
+              colors[2] = [(r0 + r1) / 2, (g0 + g1) / 2, (b0 + b1) / 2, 255];
+              colors[3] = [0, 0, 0, 0];
+            }
+
+            const idxBits = (raw[colorOff + 4] | (raw[colorOff + 5] << 8) | (raw[colorOff + 6] << 16) | (raw[colorOff + 7] << 24)) >>> 0;
+            for (let py = 0; py < 4; py++) {
+              const dstY = by * 4 + py;
+              if (dstY >= height) continue;
+              for (let px = 0; px < 4; px++) {
+                const dstX = bx * 4 + px;
+                if (dstX >= width) continue;
+                const pIdx = py * 4 + px;
+                const cIdx = (idxBits >>> (pIdx * 2)) & 3;
+                const dstOff = (dstY * width + dstX) * 4;
+                rgba[dstOff] = colors[cIdx][0];
+                rgba[dstOff + 1] = colors[cIdx][1];
+                rgba[dstOff + 2] = colors[cIdx][2];
+                rgba[dstOff + 3] = (encoding === 4) ? alphas[pIdx] : colors[cIdx][3];
+              }
+            }
+            ptr += blockBytes;
+          }
+        }
+
+        let mipW = width, mipH = height;
+        for (let m = 0; m < mipCount; m++) {
+          const bw = Math.max(1, Math.ceil(mipW / 4));
+          const bh = Math.max(1, Math.ceil(mipH / 4));
+          dataEndOffset += bw * bh * blockBytes;
+          mipW >>= 1; mipH >>= 1;
+        }
+      }
+
+      // Check for trailing ASCII TXI metadata at the end of the TPC file
+      let txiText = '';
+      if (dataEndOffset < raw.length) {
+        const tail = raw.subarray(dataEndOffset);
+        const decoder = new TextDecoder('utf-8', { fatal: false });
+        txiText = decoder.decode(tail).replace(/\0/g, '').trim();
+      }
+
+      // Build 32-bit uncompressed TGA (bottom-up origin matching KotOR convention, since TPC rows are already bottom-up!)
+      const tga = new Uint8Array(18 + width * height * 4);
+      tga[2] = 2; // Uncompressed TrueColor
+      tga[12] = width & 0xFF;
+      tga[13] = (width >>> 8) & 0xFF;
+      tga[14] = height & 0xFF;
+      tga[15] = (height >>> 8) & 0xFF;
+      tga[16] = 32; // 32-bit BGRA
+      tga[17] = 8;  // 8 alpha bits, bottom-left origin
+      for (let i = 0; i < width * height; i++) {
+        const s = i * 4;
+        const d = 18 + i * 4;
+        tga[d] = rgba[s + 2];     // B
+        tga[d + 1] = rgba[s + 1]; // G
+        tga[d + 2] = rgba[s];     // R
+        tga[d + 3] = rgba[s + 3]; // A
+      }
+
+      const fmtName = isCompressed ? (encoding === 2 ? 'DXT1' : 'DXT5') : (encoding === 1 ? 'Grayscale' : (encoding === 2 ? 'RGB' : 'RGBA'));
+      return { width, height, mipCount, fmtName, tga, txiText };
+    }
+
+    function renderTgaToCanvas(raw, canvas) {
+      if (raw.length < 18) return null;
+      const idLen = raw[0];
+      const colorMapType = raw[1];
+      const imageType = raw[2];
+      const width = raw[12] | (raw[13] << 8);
+      const height = raw[14] | (raw[15] << 8);
+      const bpp = raw[16];
+      const descriptor = raw[17];
+
+      if (colorMapType !== 0 || (imageType !== 2 && imageType !== 3) || width <= 0 || height <= 0 || width > 4096 || height > 4096) {
+        return null;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      const imgData = ctx.createImageData(width, height);
+      const dst = imgData.data;
+
+      const pixelOffset = 18 + idLen;
+      const bytesPerPixel = bpp >>> 3;
+      const flipY = (descriptor & 0x20) === 0; // TGA default origin is bottom-left
+
+      for (let y = 0; y < height; y++) {
+        const srcY = flipY ? (height - 1 - y) : y;
+        for (let x = 0; x < width; x++) {
+          const srcIdx = pixelOffset + (srcY * width + x) * bytesPerPixel;
+          const dstIdx = (y * width + x) * 4;
+          if (imageType === 3 && bytesPerPixel === 1) {
+            const v = raw[srcIdx] || 0;
+            dst[dstIdx] = v;
+            dst[dstIdx + 1] = v;
+            dst[dstIdx + 2] = v;
+            dst[dstIdx + 3] = 255;
+          } else if (bytesPerPixel === 3) {
+            dst[dstIdx] = raw[srcIdx + 2] || 0;
+            dst[dstIdx + 1] = raw[srcIdx + 1] || 0;
+            dst[dstIdx + 2] = raw[srcIdx] || 0;
+            dst[dstIdx + 3] = 255;
+          } else if (bytesPerPixel === 4) {
+            dst[dstIdx] = raw[srcIdx + 2] || 0;
+            dst[dstIdx + 1] = raw[srcIdx + 1] || 0;
+            dst[dstIdx + 2] = raw[srcIdx] || 0;
+            dst[dstIdx + 3] = raw[srcIdx + 3] !== undefined ? raw[srcIdx + 3] : 255;
+          }
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      return { width, height, bpp, imageType };
+    }
+
+    function formatHexPreview(raw, maxBytes = 256) {
+      const len = Math.min(raw.length, maxBytes);
+      const lines = [];
+      for (let i = 0; i < len; i += 16) {
+        let hex = '';
+        let ascii = '';
+        for (let j = 0; j < 16; j++) {
+          if (i + j < len) {
+            const b = raw[i + j];
+            hex += b.toString(16).padStart(2, '0') + ' ';
+            ascii += (b >= 32 && b < 127) ? String.fromCharCode(b) : '.';
+          } else {
+            hex += '   ';
+          }
+        }
+        lines.push(`${i.toString(16).padStart(4, '0')}: ${hex} ${ascii}`);
+      }
+      return lines.join('\n');
+    }
+
+    function inspectResource(entry) {
+      state.selectedEntry = entry;
+      els.btnDownloadSingle.disabled = false;
+      renderTable();
+
+      try {
+        const t0 = performance.now();
+        const raw = decompressEntry(entry);
+        const dt = (performance.now() - t0).toFixed(1);
+
+        els.inspectorMeta.innerHTML = `
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white mono text-sm">${entry.fileName}</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 mono text-[10px]">Decompressed in ${dt}ms</span>
+            </div>
+            <div class="grid grid-cols-2 gap-1 text-[11px] text-slate-400 pt-1">
+              <div>Archive: <span class="text-slate-200 mono">${entry.archiveName}</span></div>
+              <div>ResID: <span class="text-slate-200 mono">${entry.resIdHex}</span></div>
+              <div>Compressed: <span class="text-slate-200 mono">${formatBytes(entry.compSize)}</span></div>
+              <div>Unpacked: <span class="text-slate-200 mono">${formatBytes(entry.uncompSize)}</span></div>
+            </div>
+          </div>
+        `;
+
+        els.tgaPreviewWrap.classList.add('hidden');
+        els.inspectorCode.classList.remove('hidden');
+
+        if (entry.ext === 'tga') {
+          const info = renderTgaToCanvas(raw, els.tgaCanvas);
+          if (info) {
+            els.tgaPreviewWrap.classList.remove('hidden');
+            els.tgaDimensionsLabel.textContent = `${info.width}×${info.height}px • ${info.bpp}-bit ${info.imageType === 3 ? 'Grayscale/Bump' : 'TrueColor'} TGA`;
+          }
+          els.inspectorCode.textContent = formatHexPreview(raw, 128);
+        } else if (entry.ext === 'tpc') {
+          const tpcInfo = decodeTpcTexture(raw);
+          if (tpcInfo) {
+            renderTgaToCanvas(tpcInfo.tga, els.tgaCanvas);
+            els.tgaPreviewWrap.classList.remove('hidden');
+            els.tgaDimensionsLabel.textContent = `${tpcInfo.width}×${tpcInfo.height}px • ${tpcInfo.fmtName} TPC (${tpcInfo.mipCount} mips)`;
+            els.inspectorCode.textContent = (tpcInfo.txiText ? `Embedded TXI Data:\n${tpcInfo.txiText}\n\n` : 'No embedded TXI data.\n\n') + formatHexPreview(raw, 128);
+          } else {
+            els.inspectorCode.textContent = formatHexPreview(raw, 256);
+          }
+        } else if (['txi', 'txt', 'ini', 'nss', 'lyt', 'vis'].includes(entry.ext)) {
+          const decoder = new TextDecoder('utf-8', { fatal: false });
+          els.inspectorCode.textContent = decoder.decode(raw).trim() || '(Empty text resource)';
+        } else if (entry.ext === 'mdl') {
+          const mdlName = readAscii(raw, 20, 32);
+          els.inspectorCode.textContent = `Aurora Binary MDL Header\nInternal Model Name: "${mdlName}"\n\n` + formatHexPreview(raw, 256);
+        } else {
+          els.inspectorCode.textContent = formatHexPreview(raw, 256);
+        }
+      } catch (err) {
+        els.inspectorMeta.innerHTML = `<div class="p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs">Error decompressing ${entry.fileName}: ${err.message}</div>`;
+        els.tgaPreviewWrap.classList.add('hidden');
+        els.inspectorCode.classList.add('hidden');
+      }
+    }
+
+    function downloadSingleEntry(entry) {
+      try {
+        const raw = decompressEntry(entry);
+        const convertTpc = document.getElementById('chkConvertTpc') && document.getElementById('chkConvertTpc').checked;
+        let outBytes = raw;
+        let outName = entry.fileName;
+
+        if (convertTpc && entry.ext === 'tpc') {
+          const tpcInfo = decodeTpcTexture(raw);
+          if (tpcInfo) {
+            outBytes = tpcInfo.tga;
+            outName = entry.fileName.replace(/\.tpc$/i, '.tga');
+          }
+        }
+
+        const blob = new Blob([outBytes], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = outName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        els.statusText.textContent = `Downloaded ${outName} (${formatBytes(outBytes.length)})`;
+      } catch (err) {
+        els.statusText.textContent = `Error extracting ${entry.fileName}: ${err.message}`;
+      }
+    }
+
+    // =========================================================================
+    // 7. Batch Extraction & ZIP Packaging
+    // =========================================================================
+    async function extractAndDownloadZip() {
+      const selected = state.allEntries.filter(e => e.selected);
+      if (selected.length === 0) return;
+
+      els.btnDownloadZip.disabled = true;
+      els.progressContainer.classList.remove('hidden');
+      const useSubfolders = els.chkSubfolders.checked;
+      const includeManifest = els.chkIncludeManifest.checked;
+
+      const zipFiles = [];
+      const manifestLines = [
+        'Star Wars: Knights of the Old Republic (Android) - BZF Extraction Manifest',
+        '==========================================================================',
+        `Extracted ${selected.length} resources.`,
+        state.keyFileName ? `Filename mapping: ${state.keyFileName}` : 'Filename mapping: Auto-detected MDL headers + Resource IDs',
+        '',
+        'Index  ResID       Type   Size (Bytes)   Archive Path',
+        '-----  ----------  -----  -------------  ---------------------------------'
+      ];
+
+      for (let i = 0; i < selected.length; i++) {
+        const entry = selected[i];
+        const pct = Math.round(((i + 1) / selected.length) * 100);
+        els.progressBar.style.width = pct + '%';
+        els.progressPercent.textContent = pct + '%';
+        els.progressDetail.textContent = `Decompressing (${i + 1}/${selected.length}): ${entry.fileName}`;
+
+        // Yield to UI thread every 8 files so mobile browsers stay responsive
+        if (i % 8 === 0) {
+          await new Promise(r => setTimeout(r, 0));
+        }
+
+        const raw = decompressEntry(entry);
+        const convertTpc = document.getElementById('chkConvertTpc') && document.getElementById('chkConvertTpc').checked;
+
+        if (convertTpc && entry.ext === 'tpc') {
+          const tpcInfo = decodeTpcTexture(raw);
+          if (tpcInfo) {
+            const tgaName = entry.fileName.replace(/\.tpc$/i, '.tga');
+            const tgaPath = useSubfolders ? `${entry.folder}/${tgaName}` : tgaName;
+            zipFiles.push({ path: tgaPath, data: tpcInfo.tga });
+            manifestLines.push(
+              `${String(entry.index).padStart(5, ' ')}  ${entry.resIdHex}  TGA    ${String(tpcInfo.tga.length).padStart(13, ' ')}  ${tgaPath} (converted from TPC)`
+            );
+            if (tpcInfo.txiText) {
+              const txiName = entry.fileName.replace(/\.tpc$/i, '.txi');
+              const txiPath = useSubfolders ? `${entry.folder}/${txiName}` : txiName;
+              const txiBytes = new TextEncoder().encode(tpcInfo.txiText + '\n');
+              zipFiles.push({ path: txiPath, data: txiBytes });
+              manifestLines.push(
+                `${String(entry.index).padStart(5, ' ')}  ${entry.resIdHex}  TXI    ${String(txiBytes.length).padStart(13, ' ')}  ${txiPath} (extracted from TPC)`
+              );
+            }
+            continue;
+          }
+        }
+
+        const zipPath = useSubfolders ? `${entry.folder}/${entry.fileName}` : entry.fileName;
+        zipFiles.push({ path: zipPath, data: raw });
+
+        manifestLines.push(
+          `${String(entry.index).padStart(5, ' ')}  ${entry.resIdHex}  ${entry.ext.toUpperCase().padEnd(5, ' ')}  ${String(raw.length).padStart(13, ' ')}  ${zipPath}`
+        );
+      }
+
+      if (includeManifest) {
+        const encoder = new TextEncoder();
+        zipFiles.unshift({
+          path: 'README_MANIFEST.txt',
+          data: encoder.encode(manifestLines.join('\n') + '\n')
+        });
+      }
+
+      els.progressDetail.textContent = 'Building ZIP archive...';
+      await new Promise(r => setTimeout(r, 10));
+
+      const zipBlob = buildZipArchive(zipFiles);
+      const zipName = state.archives.length === 1
+        ? `${state.archives[0].folder}_extracted.zip`
+        : 'kotor_bzf_extracted_bundle.zip';
+
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = zipName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+      els.statusText.textContent = `Success! Extracted ${selected.length} files into ${zipName} (${formatBytes(zipBlob.size)}).`;
+      els.btnDownloadZip.disabled = false;
+      setTimeout(() => {
+        els.progressContainer.classList.add('hidden');
+      }, 1800);
+    }
+
+    // =========================================================================
+    // 8. Built-in Sample BZF Generator (for instant testing in browser)
+    // =========================================================================
+    function loadSampleBzf() {
+      // Creates a genuine BIFFV1 archive containing 2 sample resources:
+      // 1) lsf_glowstatic.txi (type 2022)
+      // 2) sample_bump.tga (type 3, 32x32 8-bit grayscale TGA pattern)
+      const encoder = new TextEncoder();
+      const txiBytes = encoder.encode('blending additive\nproceduretype cycle\nnumx 2\nnumy 2\nfps 20\ndecal 1\nbumpyshinytexture CM_LSF\n');
+
+      const w = 64, h = 64;
+      const tgaBytes = new Uint8Array(18 + w * h);
+      tgaBytes[2] = 3; // uncompressed grayscale
+      tgaBytes[12] = w & 0xFF;
+      tgaBytes[14] = h & 0xFF;
+      tgaBytes[16] = 8; // 8 bpp
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const d = Math.hypot(x - 32, y - 32);
+          tgaBytes[18 + y * w + x] = Math.max(0, Math.min(255, Math.round(128 + 110 * Math.sin(d * 0.45))));
+        }
+      }
+
+      const headerAndTableSize = 20 + 2 * 16;
+      const off0 = headerAndTableSize;
+      const off1 = off0 + txiBytes.length;
+      const totalLen = off1 + tgaBytes.length;
+
+      const buf = new ArrayBuffer(totalLen);
+      const u8 = new Uint8Array(buf);
+      const dv = new DataView(buf);
+
+      u8.set(encoder.encode('BIFFV1  '), 0);
+      dv.setUint32(8, 2, true);  // 2 variable entries
+      dv.setUint32(12, 0, true); // 0 fixed entries
+      dv.setUint32(16, 20, true); // table offset 20
+
+      // Entry 0: TXI
+      dv.setUint32(20, 0x0190001a, true);
+      dv.setUint32(24, off0, true);
+      dv.setUint32(28, txiBytes.length, true);
+      dv.setUint32(32, 2022, true);
+
+      // Entry 1: TGA
+      dv.setUint32(36, 0x01900004, true);
+      dv.setUint32(40, off1, true);
+      dv.setUint32(44, tgaBytes.length, true);
+      dv.setUint32(48, 3, true);
+
+      u8.set(txiBytes, off0);
+      u8.set(tgaBytes, off1);
+
+      state.keyMap.set(`${0x0190001a}:2022`, 'lsf_glowstatic');
+      state.keyMap.set(`${0x01900004}:3`, 'lda_water01b');
+      state.keyFileName = 'sample_chitin.key';
+
+      const archBzf = parseArchive(buf, 'sample_textures.bzf');
+
+      // Also build a genuine ERF V1.0 archive ("sample_swpc_tex.erf") containing an uncompressed RGB .TPC texture with embedded .TXI
+      const tw = 32, th = 32;
+      const tpcTxi = encoder.encode('envmaptexture CM_Baremetal\n');
+      const tpcPixels = new Uint8Array(tw * th * 3);
+      for (let y = 0; y < th; y++) {
+        for (let x = 0; x < tw; x++) {
+          const idx = (y * tw + x) * 3;
+          tpcPixels[idx] = (x * 8) & 0xFF;
+          tpcPixels[idx + 1] = ((x ^ y) * 8) & 0xFF;
+          tpcPixels[idx + 2] = 220;
+        }
+      }
+      const tpcTotal = 128 + tpcPixels.length + tpcTxi.length;
+      const tpcBuf = new Uint8Array(tpcTotal);
+      const tpcDv = new DataView(tpcBuf.buffer);
+      tpcDv.setUint32(0, 0, true); // 0 = uncompressed
+      tpcDv.setFloat32(4, 1.0, true);
+      tpcDv.setUint16(8, tw, true);
+      tpcDv.setUint16(10, th, true);
+      tpcBuf[12] = 2; // RGB
+      tpcBuf[13] = 1; // 1 mipmap
+      tpcBuf.set(tpcPixels, 128);
+      tpcBuf.set(tpcTxi, 128 + tpcPixels.length);
+
+      // ERF V1.0 header (160 bytes) + 1 Key Entry (24 bytes) + 1 Resource Entry (8 bytes) + tpcBuf
+      const erfBuf = new ArrayBuffer(160 + 24 + 8 + tpcBuf.length);
+      const erfU8 = new Uint8Array(erfBuf);
+      const erfDv = new DataView(erfBuf);
+      erfU8.set(encoder.encode('ERF V1.0'), 0);
+      erfDv.setUint32(16, 1, true);   // entryCount = 1
+      erfDv.setUint32(24, 160, true); // offsetToKeyList = 160
+      erfDv.setUint32(28, 184, true); // offsetToResourceList = 184
+      // Key entry at 160
+      erfU8.set(encoder.encode('pmbh01'), 160);
+      erfDv.setUint32(160 + 16, 0, true);    // resId = 0
+      erfDv.setUint16(160 + 20, 3007, true); // resType = 3007 (tpc)
+      // Resource entry at 184
+      erfDv.setUint32(184, 192, true);           // offset = 192
+      erfDv.setUint32(188, tpcBuf.length, true); // size
+      erfU8.set(tpcBuf, 192);
+
+      const archErf = parseArchive(erfBuf, 'sample_swpc_tex.erf');
+
+      state.archives = [archBzf, archErf];
+      rebuildAllEntries();
+      updateFilterDropdowns();
+      updateUI();
+      inspectResource(archErf.entries[0]);
+      els.statusText.textContent = 'Loaded sample_textures.bzf + sample_swpc_tex.erf — tap any row to inspect or tap Extract & Download ZIP!';
+    }
+
+    // =========================================================================
+    // 9. Event Listeners
+    // =========================================================================
+    els.inputKeyFile.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        const buf = await file.arrayBuffer();
+        parseChitinKey(buf, file.name);
+        els.statusText.textContent = `Loaded ${file.name} (${state.keyMap.size.toLocaleString()} resource names mapped).`;
+      } catch (err) {
+        els.statusText.textContent = `Error reading chitin.key: ${err.message}`;
+      }
+    });
+
+    els.btnClearKey.addEventListener('click', () => {
+      state.keyMap.clear();
+      state.keyFileName = null;
+      els.inputKeyFile.value = '';
+      for (const arch of state.archives) {
+        resolveNamesForArchive(arch);
+      }
+      updateUI();
+      els.statusText.textContent = 'Cleared chitin.key mapping.';
+    });
+
+    els.inputBzfFiles.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
+      for (const file of files) {
+        try {
+          els.statusText.textContent = `Reading ${file.name}...`;
+          const buf = await file.arrayBuffer();
+          const arch = parseArchive(buf, file.name);
+          // Replace if same archive name already loaded
+          const existingIdx = state.archives.findIndex(a => a.name === file.name);
+          if (existingIdx >= 0) {
+            state.archives[existingIdx] = arch;
+          } else {
+            state.archives.push(arch);
+          }
+        } catch (err) {
+          els.statusText.textContent = `Error parsing ${file.name}: ${err.message}`;
+        }
+      }
+
+      rebuildAllEntries();
+      updateFilterDropdowns();
+      updateUI();
+      if (state.allEntries.length > 0) {
+        inspectResource(state.allEntries[0]);
+        els.statusText.textContent = `Loaded ${state.archives.length} archive(s) with ${state.allEntries.length} total resources.`;
+      }
+    });
+
+    els.btnClearAll.addEventListener('click', () => {
+      state.archives = [];
+      state.allEntries = [];
+      state.selectedEntry = null;
+      els.inputBzfFiles.value = '';
+      els.btnDownloadSingle.disabled = true;
+      els.tgaPreviewWrap.classList.add('hidden');
+      els.inspectorCode.classList.add('hidden');
+      els.inspectorMeta.innerHTML = '<p class="text-slate-500 italic">Tap any file in the table to decompress and preview its contents.</p>';
+      updateFilterDropdowns();
+      updateUI();
+      els.statusText.textContent = 'Cleared all loaded archives.';
+    });
+
+    els.searchInput.addEventListener('input', renderTable);
+    els.filterArchive.addEventListener('change', renderTable);
+    els.filterType.addEventListener('change', renderTable);
+
+    els.chkMaster.addEventListener('change', () => {
+      const checked = els.chkMaster.checked;
+      for (const e of getFilteredEntries()) {
+        e.selected = checked;
+      }
+      updateUI();
+    });
+
+    els.btnSelectAll.addEventListener('click', () => {
+      const filtered = getFilteredEntries();
+      const allSelected = filtered.every(e => e.selected);
+      for (const e of filtered) {
+        e.selected = !allSelected;
+      }
+      els.chkMaster.checked = !allSelected;
+      updateUI();
+    });
+
+    els.btnDownloadZip.addEventListener('click', extractAndDownloadZip);
+
+    els.btnDownloadSingle.addEventListener('click', () => {
+      if (state.selectedEntry) downloadSingleEntry(state.selectedEntry);
+    });
+
+    els.btnLoadDemo.addEventListener('click', loadSampleBzf);
+
+    els.btnOpenGuide.addEventListener('click', () => {
+      els.guideModal.classList.remove('hidden');
+    });
+    els.btnCloseGuide.addEventListener('click', () => {
+      els.guideModal.classList.add('hidden');
+    });
+    els.btnCloseGuideBottom.addEventListener('click', () => {
+      els.guideModal.classList.add('hidden');
+    });
+  })();
+</script>
+<script>
+(function(){
+"use strict";
+/* ============================== utilities ============================== */
+const $ = (id) => document.getElementById(id);
+const listEl = $("list"), emptyEl = $("empty"), countEl = $("count");
+const downloadAllBtn = $("downloadAll"), clearAllBtn = $("clearAll");
+
+function fmtSize(n){
+  if(n < 1024) return n + " B";
+  if(n < 1024*1024) return (n/1024).toFixed(1).replace(/\.0$/,"") + " KB";
+  return (n/(1024*1024)).toFixed(2) + " MB";
+}
+function baseName(name){
+  const i = name.lastIndexOf(".");
+  return i > 0 ? name.slice(0, i) : name;
+}
+function extOf(name){
+  const i = name.lastIndexOf(".");
+  return i > 0 ? name.slice(i+1).toLowerCase() : "";
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+let uid = 0;
+
+/* ============================== TGA decode ============================== */
+function decodeTGA(buffer){
+  const bytes = new Uint8Array(buffer);
+  const view = new DataView(buffer);
+  if(bytes.length < 18) throw new Error("File is too small to be a TGA.");
+  const idLen   = view.getUint8(0);
+  const cmapType= view.getUint8(1);
+  const imgType = view.getUint8(2);
+  const cmapOrigin = view.getUint16(3, true);
+  const cmapLen    = view.getUint16(5, true);
+  const cmapDepth  = view.getUint8(7);
+  const width  = view.getUint16(12, true);
+  const height = view.getUint16(14, true);
+  const depth  = view.getUint8(16);
+  const descriptor = view.getUint8(17);
+  if(width === 0 || height === 0) throw new Error("TGA header reports a zero width or height.");
+  const supported = [1,2,3,9,10,11];
+  if(!supported.includes(imgType)) throw new Error("Unsupported TGA image type " + imgType + ".");
+  const isRLE = imgType >= 9;
+  const isMapped = imgType === 1 || imgType === 9;
+  const isGrey = imgType === 3 || imgType === 11;
+  const alphaBits = descriptor & 0x0F;
+  const topOrigin = (descriptor & 0x20) !== 0;
+  const rightOrigin = (descriptor & 0x10) !== 0;
+
+  let offset = 18 + idLen;
+
+  /* colour map */
+  let palette = null; // array of [r,g,b,a]
+  if(cmapType === 1){
+    const entryBytes = Math.ceil(cmapDepth / 8);
+    palette = [];
+    for(let i = 0; i < cmapLen; i++){
+      const p = offset + i * entryBytes;
+      if(p + entryBytes > bytes.length) throw new Error("Colour map runs past the end of the file.");
+      palette.push(readColor(bytes, view, p, cmapDepth, alphaBits));
+    }
+    offset += cmapLen * entryBytes;
+  } else if(isMapped){
+    throw new Error("Colour-mapped TGA has no colour map.");
+  }
+
+  function readColor(b, v, p, bits, aBits){
+    if(bits === 32) return [b[p+2], b[p+1], b[p], b[p+3]];
+    if(bits === 24) return [b[p+2], b[p+1], b[p], 255];
+    if(bits === 16){
+      const val = v.getUint16(p, true);
+      const r = (val >> 10) & 31, g = (val >> 5) & 31, bl = val & 31;
+      const a = aBits >= 1 ? ((val >> 15) & 1 ? 255 : 0) : 255;
+      return [Math.round(r*255/31), Math.round(g*255/31), Math.round(bl*255/31), a];
+    }
+    if(bits === 8) return [b[p], b[p], b[p], 255];
+    throw new Error("Unsupported colour depth " + bits + "-bit.");
+  }
+
+  const total = width * height;
+  const out = new Uint8ClampedArray(total * 4);
+  const pixelBytes = Math.ceil(depth / 8);
+  let pos = offset;
+
+  function readOnePixel(){
+    if(pos + pixelBytes > bytes.length) throw new Error("Pixel data runs past the end of the file.");
+    let r,g,b,a;
+    if(isGrey){
+      if(depth === 8){ const v = bytes[pos]; r=g=b=v; a=255; }
+      else if(depth === 16){ r=g=b=bytes[pos]; a=bytes[pos+1]; }
+      else throw new Error("Unsupported greyscale depth " + depth + "-bit.");
+    } else if(isMapped){
+      let idx;
+      if(depth === 8) idx = bytes[pos];
+      else if(depth === 16) idx = view.getUint16(pos, true);
+      else throw new Error("Unsupported index depth " + depth + "-bit.");
+      const entry = palette[(idx - cmapOrigin + cmapLen) % cmapLen] || palette[idx];
+      if(!entry) throw new Error("Colour map index " + idx + " is out of range.");
+      [r,g,b,a] = entry;
+    } else {
+      [r,g,b,a] = readColor(bytes, view, pos, depth, alphaBits);
+    }
+    pos += pixelBytes;
+    return [r,g,b,a];
+  }
+
+  let written = 0;
+  function put(i, px){
+    const fx = i % width, fy = Math.floor(i / width);
+    const dx = rightOrigin ? width - 1 - fx : fx;
+    const dy = topOrigin ? fy : height - 1 - fy;
+    const o = (dy * width + dx) * 4;
+    out[o] = px[0]; out[o+1] = px[1]; out[o+2] = px[2]; out[o+3] = px[3];
+  }
+
+  if(isRLE){
+    while(written < total){
+      if(pos >= bytes.length) throw new Error("RLE data ended before the image was complete.");
+      const header = bytes[pos++];
+      const count = (header & 0x7F) + 1;
+      if(header & 0x80){
+        const px = readOnePixel();
+        for(let k = 0; k < count && written < total; k++) put(written++, px);
+      } else {
+        for(let k = 0; k < count && written < total; k++) put(written++, readOnePixel());
+      }
+    }
+  } else {
+    while(written < total) put(written++, readOnePixel());
+  }
+
+  return { width, height, data: out, depth, type: imgType, rle: isRLE };
+}
+
+/* ============================== TGA encode ============================== */
+function encodeTGA(imageData, useRLE, depthOpt){
+  const w = imageData.width, h = imageData.height, src = imageData.data;
+  let depth = depthOpt;
+  if(depth === "auto"){
+    let hasAlpha = false;
+    for(let i = 3; i < src.length; i += 4){ if(src[i] !== 255){ hasAlpha = true; break; } }
+    depth = hasAlpha ? 32 : 24;
+  } else depth = parseInt(depth, 10);
+  const bpp = depth / 8;
+
+  /* Build rows in file order: bottom row first (classic bottom-left origin). */
+  const rows = [];
+  for(let y = h - 1; y >= 0; y--){
+    const row = new Uint8Array(w * bpp);
+    for(let x = 0; x < w; x++){
+      const s = (y * w + x) * 4, d = x * bpp;
+      row[d] = src[s+2]; row[d+1] = src[s+1]; row[d+2] = src[s];
+      if(bpp === 4) row[d+3] = src[s+3];
+    }
+    rows.push(row);
+  }
+
+  const chunks = [];
+  const header = new Uint8Array(18);
+  const hv = new DataView(header.buffer);
+  header[2] = useRLE ? 10 : 2;
+  hv.setUint16(12, w, true);
+  hv.setUint16(14, h, true);
+  header[16] = depth;
+  header[17] = depth === 32 ? 8 : 0;
+  chunks.push(header);
+
+  function samePx(row, a, b){
+    const ao = a * bpp, bo = b * bpp;
+    for(let k = 0; k < bpp; k++) if(row[ao+k] !== row[bo+k]) return false;
+    return true;
+  }
+  function runAt(row, x){
+    let r = 1;
+    while(x + r < w && r < 128 && samePx(row, x, x + r)) r++;
+    return r;
+  }
+
+  if(!useRLE){
+    for(const row of rows) chunks.push(row);
+  } else {
+    for(const row of rows){
+      let x = 0;
+      while(x < w){
+        const run = runAt(row, x);
+        if(run >= 2){
+          chunks.push(new Uint8Array([0x80 | (run - 1)]));
+          chunks.push(row.slice(x * bpp, (x + 1) * bpp));
+          x += run;
+        } else {
+          const start = x; x++;
+          while(x < w && (x - start) < 128 && runAt(row, x) < 2) x++;
+          chunks.push(new Uint8Array([(x - start) - 1]));
+          chunks.push(row.slice(start * bpp, x * bpp));
+        }
+      }
+    }
+  }
+
+  let totalLen = 0;
+  for(const c of chunks) totalLen += c.length;
+  const outBuf = new Uint8Array(totalLen);
+  let o = 0;
+  for(const c of chunks){ outBuf.set(c, o); o += c.length; }
+  return { blob: new Blob([outBuf], { type: "image/x-tga" }), depth };
+}
+
+/* ============================== image loading ============================== */
+function loadImageDataFromBlob(blob){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        if(!canvas.width || !canvas.height) throw new Error("Image has no size.");
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(data);
+      } catch(e){ URL.revokeObjectURL(url); reject(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Could not read that image file.")); };
+    img.src = url;
+  });
+}
+function imageDataToCanvas(imageData){
+  const canvas = document.createElement("canvas");
+  canvas.width = imageData.width; canvas.height = imageData.height;
+  canvas.getContext("2d").putImageData(new ImageData(imageData.data, imageData.width, imageData.height), 0, 0);
+  return canvas;
+}
+function canvasToBlob(canvas, type){
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((b) => b ? resolve(b) : reject(new Error("Encoding failed.")), type);
+  });
+}
+function makeThumb(imageData){
+  const max = 128;
+  const scale = Math.min(1, max / Math.max(imageData.width, imageData.height));
+  const tw = Math.max(1, Math.round(imageData.width * scale));
+  const th = Math.max(1, Math.round(imageData.height * scale));
+  const full = imageDataToCanvas(imageData);
+  const small = document.createElement("canvas");
+  small.width = tw; small.height = th;
+  const ctx = small.getContext("2d");
+  ctx.imageSmoothingEnabled = scale < 1;
+  ctx.drawImage(full, 0, 0, tw, th);
+  return small.toDataURL("image/png");
+}
+
+/* ============================== ZIP (store, no deps) ============================== */
+const CRC_TABLE = (() => {
+  const t = new Int32Array(256);
+  for(let n = 0; n < 256; n++){
+    let c = n;
+    for(let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c;
+  }
+  return t;
+})();
+function crc32(u8){
+  let c = 0xFFFFFFFF;
+  for(let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+async function buildZip(entries){ /* entries: [{name, blob}] */
+  const enc = new TextEncoder();
+  const parts = [], central = [];
+  let offset = 0;
+  const now = new Date();
+  const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (Math.floor(now.getSeconds()/2))) & 0xFFFF;
+  const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth()+1) << 5) | now.getDate()) & 0xFFFF;
+  for(const e of entries){
+    const data = new Uint8Array(await e.blob.arrayBuffer());
+    const nameBytes = enc.encode(e.name);
+    const crc = crc32(data);
+    const local = new DataView(new ArrayBuffer(30));
+    local.setUint32(0, 0x04034b50, true);
+    local.setUint16(4, 20, true);
+    local.setUint16(6, 0x0800, true);
+    local.setUint16(8, 0, true);
+    local.setUint16(10, dosTime, true);
+    local.setUint16(12, dosDate, true);
+    local.setUint32(14, crc, true);
+    local.setUint32(18, data.length, true);
+    local.setUint32(22, data.length, true);
+    local.setUint16(26, nameBytes.length, true);
+    local.setUint16(28, 0, true);
+    parts.push(new Uint8Array(local.buffer), nameBytes, data);
+
+    const cen = new DataView(new ArrayBuffer(46));
+    cen.setUint32(0, 0x02014b50, true);
+    cen.setUint16(4, 20, true);
+    cen.setUint16(6, 20, true);
+    cen.setUint16(8, 0x0800, true);
+    cen.setUint16(10, 0, true);
+    cen.setUint16(12, dosTime, true);
+    cen.setUint16(14, dosDate, true);
+    cen.setUint32(16, crc, true);
+    cen.setUint32(20, data.length, true);
+    cen.setUint32(24, data.length, true);
+    cen.setUint16(28, nameBytes.length, true);
+    cen.setUint32(42, offset, true);
+    central.push(new Uint8Array(cen.buffer), nameBytes);
+    offset += 30 + nameBytes.length + data.length;
+  }
+  let cdSize = 0;
+  for(const c of central) cdSize += c.length;
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, entries.length, true);
+  end.setUint16(10, entries.length, true);
+  end.setUint32(12, cdSize, true);
+  end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: "application/zip" });
+}
+function triggerDownload(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ============================== app state ============================== */
+const items = []; // {id,file,kind,status,width,height,srcMeta,thumb,outs:[{name,blob,url,size}],error}
+const usedOutNames = new Set();
+
+function getSettings(){
+  return {
+    rle: $("rle").checked,
+    depth: $("depth").value,
+    suffixes: $("suffixes").value.split(",").map(s => s.trim()).filter(Boolean)
+  };
+}
+function uniqueOutName(name){
+  if(!usedOutNames.has(name.toLowerCase())){ usedOutNames.add(name.toLowerCase()); return name; }
+  const b = baseName(name), e = extOf(name);
+  let i = 1;
+  let cand = b + "-" + i + "." + e;
+  while(usedOutNames.has(cand.toLowerCase())){ i++; cand = b + "-" + i + "." + e; }
+  usedOutNames.add(cand.toLowerCase());
+  return cand;
+}
+
+async function processItem(item){
+  item.status = "work"; item.error = null;
+  for(const o of item.outs || []) URL.revokeObjectURL(o.url);
+  item.outs = [];
+  render();
+  try {
+    const buf = await item.file.arrayBuffer();
+    let imageData, srcMeta;
+    if(item.kind === "tga"){
+      const dec = decodeTGA(buf);
+      imageData = new ImageData(dec.data, dec.width, dec.height);
+      srcMeta = dec.width + "×" + dec.height + " · TGA type " + dec.type + (dec.rle ? " RLE" : "") + " · " + dec.depth + "-bit";
+    } else {
+      imageData = await loadImageDataFromBlob(item.file);
+      const kindLabel = item.kind.toUpperCase();
+      srcMeta = imageData.width + "×" + imageData.height + " · " + kindLabel;
+    }
+    item.width = imageData.width; item.height = imageData.height;
+    item.srcMeta = srcMeta;
+    item.thumb = makeThumb(imageData);
+
+    if(item.kind === "tga"){
+      const blob = await canvasToBlob(imageDataToCanvas(imageData), "image/png");
+      const name = uniqueOutName(baseName(item.file.name) + ".png");
+      item.outs = [{ name, blob, url: URL.createObjectURL(blob), size: blob.size }];
+      item.outMeta = "PNG";
+    } else {
+      const s = getSettings();
+      const { blob, depth } = encodeTGA(imageData, s.rle, s.depth);
+      const base = baseName(item.file.name);
+      const names = [base + ".tga", ...s.suffixes.map(sfx => base + sfx + ".tga")];
+      item.outs = names.map(n => {
+        const uname = uniqueOutName(n);
+        return { name: uname, blob, url: URL.createObjectURL(blob), size: blob.size };
+      });
+      item.outMeta = "TGA " + depth + "-bit" + (s.rle ? " · RLE" : " · uncompressed");
+    }
+    item.status = "ok";
+  } catch(e){
+    item.status = "err";
+    item.error = e && e.message ? e.message : String(e);
+  }
+  render();
+}
+
+async function addFiles(fileList){
+  const files = Array.from(fileList || []);
+  for(const f of files){
+    const ext = extOf(f.name);
+    let kind = null;
+    if(ext === "tga") kind = "tga";
+    else if(ext === "png") kind = "png";
+    else if(ext === "jpg" || ext === "jpeg") kind = "jpg";
+    else if(ext === "webp") kind = "webp";
+    if(!kind){
+      /* sniff PNG signature as a last resort */
+      try {
+        const head = new Uint8Array(await f.slice(0, 8).arrayBuffer());
+        if(head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47) kind = "png";
+      } catch(e){}
+    }
+    if(!kind) continue;
+    const item = { id: ++uid, file: f, kind, status: "work", outs: [], thumb: null, error: null, srcMeta: "", outMeta: "" };
+    items.push(item);
+    render();
+    await processItem(item);
+  }
+  render();
+}
+
+/* ============================== rendering ============================== */
+const DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="m6 10 6 6 6-6"/><path d="M4 20h16"/></svg>';
+const X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>';
+
+function render(){
+  emptyEl.style.display = items.length ? "none" : "block";
+  listEl.querySelectorAll(".item").forEach(n => n.remove());
+  for(const item of items){
+    const el = document.createElement("div");
+    el.className = "item";
+    const target = item.kind === "tga" ? "PNG" : "TGA";
+    const statusHtml =
+      item.status === "ok"  ? '<span class="status ok">✓ Converted' + (item.outMeta ? " — " + escapeHtml(item.outMeta) : "") + "</span>" :
+      item.status === "err" ? '<span class="status err">✕ Failed</span>' :
+                              '<span class="status work">Converting…</span>';
+    const outsHtml = item.outs.length
+      ? '<div class="outs">' + item.outs.map(o =>
+          '<a class="out-chip" href="' + o.url + '" download="' + escapeHtml(o.name) + '">' + DL_ICON +
+          "<span>" + escapeHtml(o.name) + '</span><span class="sz">' + fmtSize(o.size) + "</span></a>"
+        ).join("") + "</div>"
+      : "";
+    el.innerHTML =
+      '<div class="item-main">' +
+        '<div class="thumb">' + (item.thumb ? '<img alt="" src="' + item.thumb + '" />' : '<span class="noimg">' + escapeHtml(item.kind) + "</span>") + "</div>" +
+        '<div class="meta">' +
+          '<div class="fname">' + escapeHtml(item.file.name) + "</div>" +
+          '<div class="fsub">' +
+            (item.srcMeta ? '<span class="mono">' + escapeHtml(item.srcMeta) + "</span>" : "") +
+            '<span class="mono">' + fmtSize(item.file.size) + '</span>' +
+            '<span><span class="arrow">→</span> ' + target + "</span>" +
+            statusHtml +
+          "</div>" +
+        "</div>" +
+        '<button class="remove" aria-label="Remove ' + escapeHtml(item.file.name) + '">' + X_ICON + "</button>" +
+      "</div>" +
+      (item.status === "err" && item.error ? '<div class="err-msg">' + escapeHtml(item.error) + "</div>" : "") +
+      outsHtml;
+    el.querySelector(".remove").addEventListener("click", () => removeItem(item.id));
+    listEl.appendChild(el);
+  }
+  const done = items.filter(i => i.status === "ok");
+  const totalOuts = done.reduce((n, i) => n + i.outs.length, 0);
+  const working = items.some(i => i.status === "work");
+  downloadAllBtn.disabled = totalOuts === 0 || working;
+  downloadAllBtn.innerHTML = DL_ICON + (totalOuts > 1 ? "Download all (" + totalOuts + " files, ZIP)" : "Download all");
+  clearAllBtn.disabled = items.length === 0;
+  countEl.textContent = items.length
+    ? items.length + (items.length === 1 ? " file" : " files") + " · " + done.length + " converted" + (items.some(i => i.status === "err") ? " · " + items.filter(i => i.status === "err").length + " failed" : "")
+    : "";
+}
+function removeItem(id){
+  const i = items.findIndex(x => x.id === id);
+  if(i < 0) return;
+  for(const o of items[i].outs) {
+    URL.revokeObjectURL(o.url);
+    usedOutNames.delete(o.name.toLowerCase());
+  }
+  items.splice(i, 1);
+  render();
+}
+
+/* ============================== events ============================== */
+const dropEl = $("drop"), picker = $("picker");
+dropEl.addEventListener("click", () => picker.click());
+dropEl.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); picker.click(); } });
+picker.addEventListener("change", () => { addFiles(picker.files); picker.value = ""; });
+let dragDepth = 0;
+window.addEventListener("dragenter", (e) => { e.preventDefault(); dragDepth++; dropEl.classList.add("drag"); });
+window.addEventListener("dragleave", (e) => { e.preventDefault(); if(--dragDepth <= 0){ dragDepth = 0; dropEl.classList.remove("drag"); } });
+window.addEventListener("dragover", (e) => e.preventDefault());
+window.addEventListener("drop", (e) => {
+  e.preventDefault(); dragDepth = 0; dropEl.classList.remove("drag");
+  if(e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+});
+window.addEventListener("paste", (e) => {
+  if(e.clipboardData && e.clipboardData.files.length) addFiles(e.clipboardData.files);
+});
+
+downloadAllBtn.addEventListener("click", async () => {
+  const outs = [];
+  for(const item of items) if(item.status === "ok") outs.push(...item.outs);
+  if(!outs.length) return;
+  if(outs.length === 1){ triggerDownload(outs[0].blob, outs[0].name); return; }
+  downloadAllBtn.disabled = true;
+  const old = downloadAllBtn.innerHTML;
+  downloadAllBtn.textContent = "Building ZIP…";
+  try {
+    const zip = await buildZip(outs.map(o => ({ name: o.name, blob: o.blob })));
+    triggerDownload(zip, "converted-images.zip");
+  } finally {
+    downloadAllBtn.innerHTML = old;
+    render();
+  }
+});
+clearAllBtn.addEventListener("click", () => {
+  for(const item of items) for(const o of item.outs) URL.revokeObjectURL(o.url);
+  items.length = 0; usedOutNames.clear();
+  render();
+});
+
+/* Re-encode PNG-sourced files when TGA settings change */
+let reTimer = null;
+function scheduleReencode(){
+  clearTimeout(reTimer);
+  reTimer = setTimeout(async () => {
+    for(const item of items){
+      if(item.kind !== "tga" && item.status !== "work"){
+        for(const o of item.outs) usedOutNames.delete(o.name.toLowerCase());
+        await processItem(item);
+      }
+    }
+    render();
+  }, 350);
+}
+$("rle").addEventListener("change", scheduleReencode);
+$("depth").addEventListener("change", scheduleReencode);
+$("suffixes").addEventListener("input", scheduleReencode);
+
+render();
+})();
+</script>
+</body>
+</html>
